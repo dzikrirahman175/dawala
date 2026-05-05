@@ -15,7 +15,6 @@ export default async function handler(req, res) {
     .select('*')
     .eq('username', username)
     .eq('password', password)
-    .single();
 
   if (error || !data) {
     return res.status(401).json({ status: 'error' });
