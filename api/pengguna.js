@@ -7,12 +7,12 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const { data } = await supabase.from('users').select('*');
+    const { data } = await supabase.from('user').select('*');
     return res.json(data);
   }
 
   if (req.method === 'POST') {
-    const { error } = await supabase.from('users').insert([req.body]);
+    const { error } = await supabase.from('user').insert([req.body]);
 
     if (error) return res.status(500).json(error);
 
