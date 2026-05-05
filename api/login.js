@@ -6,12 +6,22 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  console.log("ENV URL:", process.env.SUPABASE_URL);
+  if (req.method !== 'POST') return res.status(405).end();
 
-  const { data, error } = await supabase.from('users').select('*');
+  const { username, password } = req.body;
 
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('username', username)
+    .eq('password', password)
 
-  return res.json({ data, error });
+  if (error || !data) {
+    return res.status(401).json({ status: 'error' });
+  }
+
+  res.status(200).json({
+    status: 'ok',
+    user: data
+  });
 }
