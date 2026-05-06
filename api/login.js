@@ -6,6 +6,9 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
+  console.log("MASUK API LOGIN");
+  console.log("Request Body:", req.body);
+
   if (req.method !== 'POST') return res.status(405).end();
 
   const { username, password } = req.body;
@@ -16,7 +19,12 @@ export default async function handler(req, res) {
     .eq('username', username)
     .eq('password', password);
 
-  if (error || !data || data.length === 0) {
+  if (error) {
+    console.error("ERROR SUPABASE:", error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+
+  if (!data || data.length === 0) {
     return res.status(401).json({ status: 'error' });
   }
 
@@ -24,5 +32,4 @@ export default async function handler(req, res) {
     status: 'ok',
     user: data[0]
   });
-  console.log("MASUK API LOGIN");
 }
