@@ -271,7 +271,7 @@ const WargaController = {
 
     async load() {
         try {
-            const res = await fetch('/warga');
+            const res = await fetch('/api/warga');
             this.data = await res.json();
             storage.set('warga_local', this.data);
         } catch (err) {
@@ -477,7 +477,7 @@ const WargaController = {
         if(!confirm('Hapus warga ini?')) return;
         const user = JSON.parse(localStorage.getItem('currentUser'));
         try {
-            await fetch('/hapus-warga', {
+            await fetch('/api/hapus-warga', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nik, operator: user ? user.username : 'System' })
@@ -540,7 +540,7 @@ const LogController = {
         if (!tbody) return;
 
         try {
-            const res = await fetch('/logs');
+            const res = await fetch('/api/logs');
             const logs = await res.json();
             
             tbody.innerHTML = logs.map(l => `
@@ -579,9 +579,9 @@ const DashboardController = {
 
     async loadStats() {
         try {
-            const resKas = await fetch('/data');
+            const resKas = await fetch('/api/data');
             const kas = await resKas.json();
-            const resWarga = await fetch('/warga');
+            const resWarga = await fetch('/api/warga');
             this.data = await resWarga.json();
             const warga = this.data;
 
@@ -908,7 +908,7 @@ const PenggunaController = {
         if (!container) return;
 
         try {
-            const res = await fetch('/pengguna');
+            const res = await fetch('/api/pengguna');
             const users = await res.json();
             
             container.innerHTML = users.map(u => `
@@ -928,10 +928,11 @@ const PenggunaController = {
             username: document.getElementById('user-username').value,
             password: document.getElementById('user-password').value,
             rt: document.getElementById('user-rt').value,
+            
             role: 'Pengurus'
         };
 
-        await fetch('/tambah-pengguna', {
+        await fetch('/api/tambah-pengguna', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newUser)
@@ -945,7 +946,7 @@ const PenggunaController = {
         if (username === 'admin') return alert('Akun admin utama tidak dapat dihapus');
         if (!confirm(`Hapus pengguna ${username}?`)) return;
 
-        await fetch('/hapus-pengguna', {
+        await fetch('/api/hapus-pengguna', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
@@ -1061,7 +1062,7 @@ const KeuanganController = {
 
     async loadFromServer() {
         try {
-            const res = await fetch('/data');
+            const res = await fetch('/api/data');
             const data = await res.json();
             storage.set('transactions', data);
         } catch (err) {
@@ -1123,7 +1124,7 @@ const KeuanganController = {
 
     exportData() {
         const link = document.createElement('a');
-        link.href = '/data'; // Mengambil data JSON terbaru
+        link.href = '/api/data'; // Mengambil data JSON terbaru
         // Untuk export excel langsung dari server (jika ada endpointnya)
         // Di sini kita arahkan ke link download warga sebagai contoh atau buat endpoint baru
         window.location.href = '/download-warga'; 
@@ -1249,37 +1250,51 @@ const KeuanganController = {
             description: document.getElementById('input-desc').value
         };
 
-        try {
-            if (this.currentEditId) {
-                await fetch('/edit', {
+        // TAMBAH / EDIT
+            async function saveData(data, currentEditId = null) {
+            try {
+                let res;
+
+                if (currentEditId) {
+                res = await fetch('/api/kas', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...data, id: currentEditId })
+                });
+                } else {
+                res = await fetch('/api/kas', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                    ...data,
+                    role: user.role
+                    })
                 });
-            } else {
-                await fetch('/tambah', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-            }
+                }
 
-            await this.loadFromServer();
-        } catch (err) {
-            console.log('Offline mode');
+                const result = await res.json();
+                console.log(result);
 
-            let local = storage.get('transactions');
+                if (!res.ok) throw new Error('Server error');
 
-            if (this.currentEditId) {
+                loadData();
+
+            } catch (err) {
+                console.log('Offline mode');
+
+                let local = JSON.parse(localStorage.getItem('transactions')) || [];
+
+                if (currentEditId) {
                 local = local.map(item =>
                     item.id === data.id ? data : item
                 );
-            } else {
+                } else {
                 local.push(data);
-            }
+                }
 
-            storage.set('transactions', local);
-        }
+                localStorage.setItem('transactions', JSON.stringify(local));
+            }
+            }
 
         this.currentEditId = null;
 
@@ -1294,18 +1309,23 @@ const KeuanganController = {
         if (!confirm('Hapus data ini?')) return;
         const user = JSON.parse(localStorage.getItem('currentUser'));
 
-        try {
-            await fetch('/delete', {
-                method: 'POST',
+        async function deleteData(id) {
+            const res = await fetch('/api/kas', {
+                method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, operator: user ? user.username : 'System' })
+                body: JSON.stringify({ id })
             });
 
+            if (!res.ok) throw new Error('Server error');
+        }
+
+        try {
+            await deleteData(id);
             await this.loadFromServer();
         } catch (err) {
             console.log('Offline mode');
 
-            let local = storage.get('transactions');
+            let local = storage.get('transactions') || [];
             local = local.filter(item => item.id !== id);
             storage.set('transactions', local);
         }

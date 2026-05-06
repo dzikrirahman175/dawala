@@ -14,15 +14,14 @@ export default async function handler(req, res) {
     .from('users')
     .select('*')
     .eq('username', username)
-    .eq('password', password)
-    .single();
+    .eq('password', password);
 
-  if (error || !data) {
+  if (error || !data || data.length === 0) {
     return res.status(401).json({ status: 'error' });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     status: 'ok',
-    user: data
+    user: data[0]
   });
 }

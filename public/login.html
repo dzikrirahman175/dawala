@@ -179,20 +179,21 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Load neighborhood info
-            const DEFAULT_SETTINGS = {
-                neighborhoodName: 'RW 07 Kelurahan Babakan',
-                address: 'Jl. Kemang Raya No. 123, Jakarta Selatan',
-                password: 'admin123',
-                logo: null
-            };
-            const settings = JSON.parse(localStorage.getItem('settings')) || DEFAULT_SETTINGS;
-            const nameEl = document.getElementById('login-neighborhood-name');
-            const addressEl = document.getElementById('login-address');
-            if (nameEl) nameEl.innerText = settings.neighborhoodName;
-            if (addressEl) addressEl.innerText = settings.address;
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
 
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+            
             // Load logo
             const logoEl = document.getElementById('login-logo-icon');
             if (logoEl && settings.logo) {
@@ -200,35 +201,19 @@
                 logoEl.style.background = 'transparent';
             }
 
-            // Handle login form
-            document.getElementById('loginForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
+            console.log(data);
 
-            try {
-                const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            });
+            if (data.status === 'ok') {
+            localStorage.setItem('user', JSON.stringify(data.user));
+            window.location.href = '/dashboard.html';
+            } else {
+            alert('Login gagal');
+            }
 
-                const data = await res.json();
-
-                    if (data.status === 'ok') {
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        alert('Login gagal');
-                    }
-
-                    } catch (err) {
-                    alert('Koneksi server gagal');
-                    }
+        } catch (err) {
+            alert('Koneksi server gagal');
+        }
         });
-    });
     </script>
 </body>
 </html>
