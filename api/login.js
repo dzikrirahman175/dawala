@@ -24,4 +24,5 @@ export default async function handler(req, res) {
     status: 'ok',
     user: data[0]
   });
+  console.log("MASUK API LOGIN");
 }

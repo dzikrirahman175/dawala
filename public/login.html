@@ -192,7 +192,14 @@
             body: JSON.stringify({ username, password })
             });
 
-            const data = await res.json();
+            console.log("STATUS:", res.status);
+
+            const text = await res.text();
+            console.log("RAW RESPONSE:", text);
+
+            const data = JSON.parse(text);
+
+            // const data = await res.json();
             
             // Load logo
             const logoEl = document.getElementById('login-logo-icon');
@@ -211,6 +218,7 @@
             }
 
         } catch (err) {
+            console.error("ERROR ASLI:", err);
             alert('Koneksi server gagal');
         }
         });
