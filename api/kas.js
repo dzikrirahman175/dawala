@@ -55,4 +55,21 @@ export default async function handler(req, res) {
   }
 
   res.status(405).end();
+
+  //DOWNLOAD DATA
+  import XLSX from 'xlsx';
+
+  export default async function handler(req, res) {
+  const { data } = await supabase.from('kas').select('*');
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Kas');
+
+  const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+
+  res.setHeader('Content-Disposition', 'attachment; filename=kas.xlsx');
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.send(buffer);
+}
 }
