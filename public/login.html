@@ -191,15 +191,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
             });
-
-            console.log("STATUS:", res.status);
-
-            const text = await res.text();
-            console.log("RAW RESPONSE:", text);
-
-            const data = JSON.parse(text);
-
-            // const data = await res.json();
+            
+            const data = await res.json();
             
             // Load logo
             const logoEl = document.getElementById('login-logo-icon');
