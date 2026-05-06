@@ -191,15 +191,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
             });
-            
+
             const data = await res.json();
-            
-            // Load logo
-            const logoEl = document.getElementById('login-logo-icon');
-            if (logoEl && settings.logo) {
-                logoEl.innerHTML = `<img src="${settings.logo}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">`;
-                logoEl.style.background = 'transparent';
-            }
 
             console.log(data);
 
