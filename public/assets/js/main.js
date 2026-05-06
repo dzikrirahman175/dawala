@@ -477,8 +477,8 @@ const WargaController = {
         if(!confirm('Hapus warga ini?')) return;
         const user = JSON.parse(localStorage.getItem('currentUser'));
         try {
-            await fetch('/api/hapus-warga', {
-                method: 'POST',
+            await fetch('/api/warga', {
+                method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nik, operator: user ? user.username : 'System' })
             });
@@ -579,7 +579,7 @@ const DashboardController = {
 
     async loadStats() {
         try {
-            const resKas = await fetch('/api/data');
+            const resKas = await fetch('/api/kas');
             const kas = await resKas.json();
             const resWarga = await fetch('/api/warga');
             this.data = await resWarga.json();
@@ -932,8 +932,8 @@ const PenggunaController = {
             role: 'Pengurus'
         };
 
-        await fetch('/api/tambah-pengguna', {
-            method: 'POST',
+        await fetch('api/pengguna', {
+            method: 'ADD',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newUser)
         });
@@ -946,8 +946,8 @@ const PenggunaController = {
         if (username === 'admin') return alert('Akun admin utama tidak dapat dihapus');
         if (!confirm(`Hapus pengguna ${username}?`)) return;
 
-        await fetch('/api/hapus-pengguna', {
-            method: 'POST',
+        await fetch('api/pengguna', {
+            method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
         });
@@ -1062,7 +1062,7 @@ const KeuanganController = {
 
     async loadFromServer() {
         try {
-            const res = await fetch('/api/data');
+            const res = await fetch('/api/kas');
             const data = await res.json();
             storage.set('transactions', data);
         } catch (err) {
@@ -1124,7 +1124,7 @@ const KeuanganController = {
 
     exportData() {
         const link = document.createElement('a');
-        link.href = '/api/data'; // Mengambil data JSON terbaru
+        link.href = '/api/kas'; // Mengambil data JSON terbaru
         // Untuk export excel langsung dari server (jika ada endpointnya)
         // Di sini kita arahkan ke link download warga sebagai contoh atau buat endpoint baru
         window.location.href = '/download-warga'; 
