@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     const { username, password } = req.body;
 
     const { data, error } = await supabase
-      .from('users')
+      .from('user')
       .select('*')
       .eq('username', username)
       .eq('password', password);
