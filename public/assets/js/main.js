@@ -447,23 +447,37 @@ const WargaController = {
             newWarga.oldNik = String(this.currentEditNik);
         }
 
-        const url = this.currentEditNik ? '/edit-warga' : '/tambah-warga';
+        const url = this.currentEditNik 
+        ? '/api/edit-warga' : '/api/tambah-warga';
         const method = 'POST';
 
         try {
-            await fetch(url, {
+           const res = await fetch(url, {
                 method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newWarga)
             });
+            const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Gagal menyimpan data warga');
+                }
+
+            console.log('berhasil:',data);
+
         } catch (err) {
-            let local = storage.get('warga_local');
+
+            console.error('Error:', err);
+
+            let local = JSON.parse(localStorage.getItem('warga_local')) || [];
+
             if (this.currentEditNik) {
-                local = local.map(w => w.nik === this.currentEditNik ? newWarga : w);
+                local = local.map(w => 
+                    w.nik === this.currentEditNik ? newWarga : w);
             } else {
                 local.push(newWarga);
             }
-            storage.set('warga_local', local);
+            localStorage.setItem('warga_local', JSON.stringify(local));
         }
 
         this.close();
@@ -475,23 +489,29 @@ const WargaController = {
 
     async hapus(nik) {
         if(!confirm('Hapus warga ini?')) return;
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const user = JSON.parse(localStorage.getItem('user'));
         try {
-            await fetch('/api/warga', {
-                method: 'DELETE',
+            const res = await fetch('/api/hapus-warga', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nik, operator: user ? user.username : 'System' })
             });
+            const result = await res.json();
+
+            if (!res.ok) {
+                throw new Error(result.error || 'Gagal menghapus data warga');
+            }
         } catch (err) {
-            let local = storage.get('warga_local');
+                console.error('Error:', err);
+            let local = JSON.parse(localStorage.getItem('warga_local')) || [];
             local = local.filter(w => w.nik !== nik);
-            storage.set('warga_local', local);
+            localStorage.setItem('warga_local', JSON.stringify(local));
         }
         await this.load();
     },
 
     export() {
-        const allRts = storage.get('rts');
+        const allRts = storage.get('rts') || [];
         const listRts = allRts.filter(rt => rt !== 'RW').join(', ');
         const currentFilter = document.getElementById('filter-rt-warga')?.value || "";
         
@@ -500,15 +520,17 @@ const WargaController = {
         
         if (choice === null) return; // Batal jika pengguna menekan tombol Cancel
 
-        const filterVal = choice.trim();
-        const url = filterVal ? `/download-warga?rt=${encodeURIComponent(filterVal)}` : '/download-warga';
+        const filterVal = (choice || '').trim();
+        const url = filterVal
+        ? `/api/download-warga?rt=${encodeURIComponent(filterVal)}`
+        : '/api/download-warga';
         window.location.href = url;
     },
 
     setupRTSelect() {
         const rtSelect = document.getElementById('input-rt');
         if (rtSelect) {
-            const rts = storage.get('rts');
+            const rts = storage.get('rts') || [];
             rtSelect.innerHTML = rts.map(rt => `<option value="${rt}">${rt}</option>`).join('');
         }
     },
@@ -516,7 +538,7 @@ const WargaController = {
     setupFilterRT() {
         const select = document.getElementById('filter-rt-warga');
         if (select) {
-            const rts = storage.get('rts');
+            const rts = storage.get('rts') || [];
             select.innerHTML = '<option value="">Semua Unit</option>' + 
                 rts.map(rt => `<option value="${rt}">${rt}</option>`).join('');
         }
@@ -541,8 +563,14 @@ const LogController = {
 
         try {
             const res = await fetch('/api/logs');
+            if (!res.ok) {
+                throw new Error('Gagal memuat log historis');
+            }
             const logs = await res.json();
-            
+            if (!Array.isArray(logs)) {
+                throw new Error('Format data log tidak valid');
+            }
+
             tbody.innerHTML = logs.map(l => `
                 <tr>
                     <td style="padding: 0.5rem; color: var(--text-muted);">${l.timestamp}</td>
@@ -552,6 +580,7 @@ const LogController = {
                 </tr>
             `).join('');
         } catch (err) {
+            console.error('Error:', err);
             tbody.innerHTML = '<tr><td colspan="4">Gagal memuat log historis</td></tr>';
         }
     }
@@ -566,8 +595,8 @@ const DashboardController = {
     },
 
     setupFilters() {
-        const filterIds = ['gender-rt-filter', 'age-rt-filter', 'kondisi-rt-filter', 'finansial-rt-filter', 'yatim-rt-filter', 'kehamilan-rt-filter', 'hunian-rt-filter'];
-        const rts = storage.get('rts');
+        const filterIds = ['gender-rt-filter', 'age-rt-filter', 'kondisi-rt-filter', 'finansial-rt-filter', 'yatim-rt-filter', 'kehamilan-rt-filter', 'hunian-rt-filter', 'kelurahan-rt-filter'];
+        const rts = storage.get('rts') || [];
         filterIds.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
@@ -580,8 +609,14 @@ const DashboardController = {
     async loadStats() {
         try {
             const resKas = await fetch('/api/kas');
+            if (!resKas.ok) {
+                throw new Error('Gagal memuat data kas');
+            }
             const kas = await resKas.json();
             const resWarga = await fetch('/api/warga');
+            if (!resWarga.ok) {
+                throw new Error('Gagal memuat data warga');
+            }
             this.data = await resWarga.json();
             const warga = this.data;
 
@@ -592,6 +627,7 @@ const DashboardController = {
 
             // Perhitungan Warga
             const totalWarga = warga.length;
+            document.getElementById('total-warga-count').innerText = totalWarga;
             const totalDifabel = warga.filter(w => w.kondisi === 'Difabel').length;
             const wargaBabakan = warga.filter(w => (w.kelurahan || '').toString().trim().toLowerCase() === 'babakan').length;
             const wargaLuarBabakan = warga.filter(w => (w.kelurahan || '').toString().trim().toLowerCase() !== 'babakan').length;
@@ -631,12 +667,13 @@ const DashboardController = {
     },
 
     renderCharts(warga) {
+        if (!Array.isArray(warga)) return;
         // Filter per unit untuk Gender
         const genderRt = document.getElementById('gender-rt-filter')?.value;
         const gData = genderRt ? warga.filter(w => w.rt === genderRt) : warga;
 
-        const male = gData.filter(w => w.jenis_kelamin === 'Laki-laki').length;
-        const female = gData.filter(w => w.jenis_kelamin === 'Perempuan').length;
+        const male = gData.filter(w => (w.jenis_kelamin || '').toLowerCase() .trim() === 'laki-laki').length;
+        const female = gData.filter(w => (w.jenis_kelamin || '').toLowerCase() .trim() === 'perempuan').length;
         const genderContainer = document.getElementById('gender-chart-container');
         if (genderContainer) {
             const total = gData.length || 1;
@@ -667,16 +704,22 @@ const DashboardController = {
         if (ageContainer) {
             const now = new Date();
             const ages = aData.map(w => {
-                const birth = new Date(w.tanggal_lahir);
-                let age = now.getFullYear() - birth.getFullYear();
-                const m = now.getMonth() - birth.getMonth();
+                if (!w.tanggal_lahir) return null;
+            const birth = new Date(w.tanggal_lahir);
+                if (isNaN(birth)) return null; // Cek validitas tanggal
+            let age = now.getFullYear() - birth.getFullYear();
+            const m = now.getMonth() - birth.getMonth();
                 if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) {
                     age--;
                 }
                 return age;
-            });
+            }).filter(a => a !== null); // Hanya ambil yang valid
+            if (ages.length === 0) {
+                ageContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Tidak ada data usia yang valid</p>';
+                return;
+            }
 
-            const total = aData.length || 1;
+            const total = ages.length || 1;
             const groups = [
                 { label: 'Bayi/Balita (0-4th)', count: ages.filter(a => a < 5).length, color: '#06b6d4' },
                 { label: 'Anak-anak (5-11th)', count: ages.filter(a => a >= 5 && a <= 11).length, color: '#22c55e' },
@@ -720,7 +763,11 @@ const DashboardController = {
 
         const kelurahanContainer = document.getElementById('kelurahan-chart-container');
         if (kelurahanContainer) {
-            const total = kData.length || 1;
+            const total = kData.length;
+            if (total === 0) {
+                kelurahanContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Tidak ada data kelurahan yang valid</p>';
+                return;
+            }
             const babakan = kData.filter(w => (w.kelurahan || '').toString().trim().toLowerCase() === 'babakan').length;
             const luarBabakan = total - babakan;
             
@@ -750,9 +797,13 @@ const DashboardController = {
 
         const kondisiContainer = document.getElementById('kondisi-chart-container');
         if (kondisiContainer) {
-            const total = konData.length || 1;
-            const umum = konData.filter(w => w.kondisi !== 'Difabel').length;
-            const difabel = konData.filter(w => w.kondisi === 'Difabel').length;
+            const total = konData.length;
+            if (total === 0) {
+                kondisiContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Tidak ada data kondisi yang valid</p>';
+                return;
+            }
+            const umum = konData.filter(w => (w.kondisi || '').toString().trim().toLowerCase() !== 'difabel').length;
+            const difabel = konData.filter(w => (w.kondisi || '').toString().trim().toLowerCase() === 'difabel').length;
             
             const umumPct = Math.round((umum / total) * 100);
             const difabelPct = 100 - umumPct;
@@ -779,11 +830,15 @@ const DashboardController = {
         const fData = finRt ? warga.filter(w => w.rt === finRt) : warga;
         const finansialContainer = document.getElementById('finansial-chart-container');
         if (finansialContainer) {
-            const total = fData.length || 1;
-            const mampu = fData.filter(w => w.status_finansial === 'Mampu').length;
-            const tidakMampu = total - mampu;
+            const total = fData.length;
+            if (total === 0) {
+                finansialContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Tidak ada data finansial yang valid</p>';
+                return;
+            }
+            const mampu = fData.filter(w => (w.status_finansial || '').toString().trim().toLowerCase() === 'mampu').length;
+            const tidakMampu = fData.filter(w => (w.status_finansial || '').toString().trim().toLowerCase() === 'tidak mampu').length;
             const mampuPct = Math.round((mampu / total) * 100);
-            const tidakMampuPct = 100 - mampuPct;
+            const tidakMampuPct = Math.round((tidakMampu / total) * 100);
 
             finansialContainer.innerHTML = `
                 <div class="pie-chart-wrapper">
@@ -807,11 +862,15 @@ const DashboardController = {
         const yData = yatimRt ? warga.filter(w => w.rt === yatimRt) : warga;
         const yatimContainer = document.getElementById('yatim-chart-container');
         if (yatimContainer) {
-            const total = yData.length || 1;
-            const yatim = yData.filter(w => w.status_yatim === 'Yatim').length;
-            const umum = total - yatim;
+            const total = yData.length;
+            if (total === 0) {
+                yatimContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Tidak ada data yatim yang valid</p>';
+                return;
+            }
+            const yatim = yData.filter(w => (w.status_yatim || '').toString().trim().toLowerCase() === 'yatim').length;
+            const umum = yData.filter(w => (w.status_yatim || '').toString().trim().toLowerCase() !== 'yatim').length;
             const yatimPct = Math.round((yatim / total) * 100);
-            const umumPct = 100 - yatimPct;
+            const umumPct = Math.round((umum / total) * 100);
 
             yatimContainer.innerHTML = `
                 <div class="pie-chart-wrapper">
@@ -835,11 +894,15 @@ const DashboardController = {
         const hData = hamilRt ? warga.filter(w => w.rt === hamilRt) : warga;
         const kehamilanContainer = document.getElementById('kehamilan-chart-container');
         if (kehamilanContainer) {
-            const total = hData.length || 1;
-            const hamil = hData.filter(w => w.status_kehamilan === 'Hamil').length;
-            const umum = total - hamil;
+            const total = hData.length;
+            if (total === 0) {
+                kehamilanContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Tidak ada data kehamilan yang valid</p>';
+                return;
+            }
+            const hamil = hData.filter(w => (w.status_kehamilan || '').toString().trim().toLowerCase() === 'hamil').length;
+            const umum = hData.filter(w => (w.status_kehamilan || '').toString().trim().toLowerCase() !== 'hamil').length;
             const hamilPct = Math.round((hamil / total) * 100);
-            const umumPct = 100 - hamilPct;
+            const umumPct = Math.round((umum / total) * 100);
 
             kehamilanContainer.innerHTML = `
                 <div class="pie-chart-wrapper">
@@ -863,11 +926,15 @@ const DashboardController = {
         const hnnData = hunianRt ? warga.filter(w => w.rt === hunianRt) : warga;
         const hunianContainer = document.getElementById('hunian-chart-container');
         if (hunianContainer) {
-            const total = hnnData.length || 1;
-            const tetap = hnnData.filter(w => w.status_hunian === 'Tetap').length;
-            const kontrak = total - tetap;
+            const total = hnnData.length;
+            if (total === 0) {
+                hunianContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Tidak ada data hunian yang valid</p>';
+                return;
+            }
+            const tetap = hnnData.filter(w => (w.status_hunian || '').toString().trim().toLowerCase() === 'tetap').length;
+            const kontrak = hnnData.filter(w => (w.status_hunian || '').toString().trim().toLowerCase() !== 'tetap').length;
             const tetapPct = Math.round((tetap / total) * 100);
-            const kontrakPct = 100 - tetapPct;
+            const kontrakPct = Math.round((kontrak / total) * 100);
 
             hunianContainer.innerHTML = `
                 <div class="pie-chart-wrapper">
@@ -931,27 +998,50 @@ const PenggunaController = {
             
             role: 'Pengurus'
         };
-
-        await fetch('api/pengguna', {
-            method: 'ADD',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newUser)
-        });
-
+        try {
+            const res = await fetch('api/pengguna', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newUser)
+            });
+            const data = await res.json();
+            if (data.status !== 'success') {
+                alert(data.error || 'Gagal menambahkan pengguna');
+                return;
+            }
         document.getElementById('form-tambah-pengguna').reset();
         await this.load();
+        } catch (err) {
+            console.error(err);
+            alert('koneksi server gagal');
+        }
     },
 
     async hapus(username) {
-        if (username === 'admin') return alert('Akun admin utama tidak dapat dihapus');
-        if (!confirm(`Hapus pengguna ${username}?`)) return;
-
-        await fetch('api/pengguna', {
+        if (username === 'admin') {
+            alert('Akun admin utama tidak dapat dihapus');
+            return;
+        }
+        if (!confirm(`Hapus pengguna ${username}?`)){
+            return;
+        }
+    
+    try {
+        const res = await fetch('api/pengguna', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
         });
+        const data = await res.json();
+        if (data.status !== 'success') {
+            alert(data.error || 'Gagal menghapus pengguna');
+            return;
+        }
         await this.load();
+    } catch (err) {
+        console.error(err);
+        alert('koneksi server gagal');
+        }
     }
 };
 
@@ -992,7 +1082,7 @@ const SettingsController = {
         const container = document.querySelector('.rt-tags-container');
         if (!container) return;
         
-        const rts = storage.get('rts');
+        const rts = storage.get('rts') || [];
         container.innerHTML = rts.map(rt => `
             <div class="rt-tag">
                 ${rt}
@@ -1006,22 +1096,27 @@ const SettingsController = {
         const value = input?.value.trim();
         if (!value) return;
 
-        let rts = storage.get('rts');
+        let rts = storage.get('rts') || [];
         if (rts.includes(value)) {
             alert('Unit ini sudah terdaftar!');
             return;
         }
 
         rts.push(value);
-        rts.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+        rts.sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' }));
         storage.set('rts', rts);
         input.value = '';
         this.renderRTs();
     },
 
     removeRT(name) {
-        if (!confirm(`Hapus unit ${name}?`)) return;
-        let rts = storage.get('rts');
+        let rts = storage.get('rts') || [];
+        if (rts.length <= 1) {
+            alert('Minimal harus ada 1 unit!');
+            return;
+        }
+        if (!confirm(`Hapus unit ${name}?`)){return;
+        }
         rts = rts.filter(rt => rt !== name);
         storage.set('rts', rts);
         this.renderRTs();
@@ -1030,6 +1125,10 @@ const SettingsController = {
     handleLogoUpload(input) {
         const file = input.files[0];
         if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { // 2MB limit
+            alert('Ukuran gambar minimal 1mb dan maksimal 2mb');
+            return;
+        }
         
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -1063,6 +1162,9 @@ const KeuanganController = {
     async loadFromServer() {
         try {
             const res = await fetch('/api/kas');
+            if (!res.ok) {
+                throw new Error('Gagal memuat data transaksi');
+            }
             const data = await res.json();
             storage.set('transactions', data);
         } catch (err) {
@@ -1127,21 +1229,29 @@ const KeuanganController = {
         link.href = '/api/kas'; // Mengambil data JSON terbaru
         // Untuk export excel langsung dari server (jika ada endpointnya)
         // Di sini kita arahkan ke link download warga sebagai contoh atau buat endpoint baru
-        window.location.href = '/download-warga'; 
+        window.location.href = '/api/download-warga'; 
         alert('Mengunduh database lingkungan terbaru...');
     },
 
     renderTransactions(filter = '', rtFilter = '', typeFilter = '', yearFilter = '', monthFilter = '') {
         const transactions = storage.get('transactions');
         const tbody = document.querySelector('table tbody');
+        if (!tbody) return;
 
         const filtered = transactions.filter(t => {
-            const matchSearch = t.description.toLowerCase().includes(filter.toLowerCase());
+            const desc = (t.description || '').toLowerCase();
+            const matchSearch = desc.includes(filter.toLowerCase());
             const matchRT = !rtFilter || t.rt === rtFilter;
             const matchType = !typeFilter || t.type === typeFilter;
             const matchYear = !yearFilter || new Date(t.date).getFullYear().toString() === yearFilter;
             const matchMonth = !monthFilter || (new Date(t.date).getMonth() + 1).toString() === monthFilter;
-            return matchSearch && matchRT && matchType && matchYear && matchMonth;
+            return (
+                matchSearch && 
+                matchRT && 
+                matchType && 
+                matchYear && 
+                matchMonth
+            );
         });
 
         this.updateSummary(filtered);
@@ -1226,6 +1336,8 @@ const KeuanganController = {
         const data = storage.get('transactions');
         const t = data.find(x => x.id === id);
         if (!t) return;
+        
+        this.setupRTSelectModal();
 
         document.getElementById('input-date').value = t.date;
         document.getElementById('input-type').value = t.type;
@@ -1233,13 +1345,12 @@ const KeuanganController = {
         document.getElementById('input-rt').value = t.rt;
         document.getElementById('input-desc').value = t.description;
 
-        this.setupRTSelectModal();
         this.currentEditId = id;
         document.getElementById('modal-add-transaksi').style.display = 'flex';
     },
 
     async saveTransaction() {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const user = JSON.parse(localStorage.getItem('user'));
         const data = {
             id: this.currentEditId || Date.now().toString(),
             operator: user ? user.username : 'System',
@@ -1251,77 +1362,69 @@ const KeuanganController = {
         };
 
         // TAMBAH / EDIT
-            async function saveData(data, currentEditId = null) {
             try {
                 let res;
 
-                if (currentEditId) {
+                if (this.currentEditId) {
                 res = await fetch('/api/kas', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ...data, id: currentEditId })
+                    body: JSON.stringify(data)
                 });
-                } else {
+            } else {
                 res = await fetch('/api/kas', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                    ...data,
-                    role: user.role
-                    })
+                    body: JSON.stringify(data)
                 });
+            }
+
+                if (!res.ok){ 
+                    throw new Error('Server error');
                 }
-
-                const result = await res.json();
-                console.log(result);
-
-                if (!res.ok) throw new Error('Server error');
-
-                loadData();
+                // reload data terbaru
+                await this.loadFromServer();
 
             } catch (err) {
                 console.log('Offline mode');
-
+                
+                // fallback localStorage
                 let local = JSON.parse(localStorage.getItem('transactions')) || [];
 
-                if (currentEditId) {
-                local = local.map(item =>
+                if (this.currentEditId) {
+                    local = local.map(item =>
                     item.id === data.id ? data : item
                 );
-                } else {
+            } else {
                 local.push(data);
                 }
 
-                localStorage.setItem('transactions', JSON.stringify(local));
+                Storage.set('transactions', local);
             }
-            }
+                this.currentEditId = null;
 
-        this.currentEditId = null;
+                this.renderTransactions();
+                this.updateSummary();
 
-        this.renderTransactions();
-        this.updateSummary();
-
-        document.getElementById('form-add-transaksi').reset();
-        document.getElementById('modal-add-transaksi').style.display = 'none';
+                document.getElementById('form-add-transaksi').reset();
+                document.getElementById('modal-add-transaksi').style.display = 'none';
     },
 
     async hapus(id) {
         if (!confirm('Hapus data ini?')) return;
-        const user = JSON.parse(localStorage.getItem('currentUser'));
 
-        async function deleteData(id) {
+        try {
             const res = await fetch('/api/kas', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             });
 
-            if (!res.ok) throw new Error('Server error');
+            if (!res.ok) {throw new Error('Server error');
         }
 
-        try {
-            await deleteData(id);
             await this.loadFromServer();
+        
         } catch (err) {
             console.log('Offline mode');
 
