@@ -416,71 +416,71 @@ const WargaController = {
     },
 
     async save(e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        const user = JSON.parse(localStorage.getItem('curentUser'));
-       
-        const newWarga = {
-            operator: user ? user.username : 'System',
-            nama: document.getElementById('input-nama').value,
-            no_kk: document.getElementById('input-no-kk').value,
-            nik: document.getElementById('input-nik').value,
-            tempat_lahir: document.getElementById('input-tempat-lahir').value,
-            tanggal_lahir: document.getElementById('input-tgl-lahir').value,
-            jenis_kelamin: document.getElementById('input-jk').value,
-            agama: document.getElementById('input-agama').value,
-            alamat: document.getElementById('input-alamat').value,
-            rt: document.getElementById('input-rt').value,
-            rt_num: document.getElementById('input-rt-num').value,
-            rw_num: document.getElementById('input-rw-num').value,
-            kelurahan: document.getElementById('input-kelurahan').value,
-            kecamatan: document.getElementById('input-kecamatan').value,
-            pekerjaan: document.getElementById('input-pekerjaan').value,
-            status_perkawinan: document.getElementById('input-perkawinan').value,
-            kewarganegaraan: document.getElementById('input-kwn').value,
-            status_hunian: document.getElementById('input-status-hunian').value,
-            status_finansial: document.getElementById('input-finansial').value,
-            kondisi: document.getElementById('input-kondisi').value,
-            status_yatim: document.getElementById('input-yatim').value,
-            status_kehamilan: document.getElementById('input-kehamilan').value
-        };
+    const user = JSON.parse(localStorage.getItem('currentUser'));
 
-        if (this.currentEditNik) {
-            newWarga.oldNik =this.currentEditNik;
-        }
-        try {
+    const newWarga = {
+        operator: user ? user.username : 'System',
+        nama: document.getElementById('input-nama').value,
+        no_kk: document.getElementById('input-no-kk').value,
+        nik: document.getElementById('input-nik').value,
+        tempat_lahir: document.getElementById('input-tempat-lahir').value,
+        tanggal_lahir: document.getElementById('input-tgl-lahir').value,
+        jenis_kelamin: document.getElementById('input-jk').value,
+        agama: document.getElementById('input-agama').value,
+        alamat: document.getElementById('input-alamat').value,
+        rt: document.getElementById('input-rt').value,
+        rt_num: document.getElementById('input-rt-num').value,
+        rw_num: document.getElementById('input-rw-num').value,
+        kelurahan: document.getElementById('input-kelurahan').value,
+        kecamatan: document.getElementById('input-kecamatan').value,
+        pekerjaan: document.getElementById('input-pekerjaan').value,
+        status_perkawinan: document.getElementById('input-perkawinan').value,
+        kewarganegaraan: document.getElementById('input-kwn').value,
+        status_hunian: document.getElementById('input-status-hunian').value,
+        status_finansial: document.getElementById('input-finansial').value,
+        kondisi: document.getElementById('input-kondisi').value,
+        status_yatim: document.getElementById('input-yatim').value,
+        status_kehamilan: document.getElementById('input-kehamilan').value
+    };
+
+    if (this.currentEditNik) {
+        newWarga.oldNik = this.currentEditNik;
+    }
+
+    try {
+
         const method = this.currentEditNik ? 'PUT' : 'POST';
 
         const res = await fetch('/api/warga', {
             method: method,
-            headers: { 'Content-Type': 'application/json'
+            headers: {
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(newWarga)
         });
-        const text = await res.text();
 
-        let result;
-        try {
-            result = JSON.parse(text);
-        } catch {
-            throw new Error(result.error || 'Respons tidak valid');
-        }
-        await this.load(); // Refresh data setelah berhasil menyimpan
+        const result = await res.json();
 
         if (!res.ok) {
             throw new Error(result.error || 'Gagal menyimpan data warga');
         }
-        await this.load(); // Refresh data setelah berhasil menyimpan
 
-        } catch (err) {
+        await this.load();
 
-            console.error('Error simpan warga', err);
-            alert('Gagal menyimpan data warga. Pastikan Anda terhubung ke internet.');
-        }
-        this.currentEditNik = null; // Reset edit state setelah simpan
+        this.currentEditNik = null;
         document.getElementById('form-warga').reset();
         this.close();
-        },
+
+        alert('Data warga berhasil disimpan');
+
+    } catch (err) {
+
+        console.error('Error simpan warga:', err);
+        alert('Gagal menyimpan data warga');
+    }
+},
 
     async hapus(nik) {
         if(!confirm('Hapus warga ini?')) return;

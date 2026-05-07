@@ -7,87 +7,56 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
 
-  try {
+  // GET
+  if (req.method === 'GET') {
 
-    // ======================
-    // GET
-    // ======================
-    if (req.method === 'GET') {
+    const { data, error } = await supabase
+      .from('warga')
+      .select('*');
 
-      const { data, error } = await supabase
-        .from('warga')
-        .select('*');
-
-      if (error) {
-
-        console.error('GET ERROR:', error);
-
-        return res.status(500).json({
-          error: error.message
-        });
-      }
-
-      return res.status(200).json(data);
+    if (error) {
+      return res.status(500).json(error);
     }
 
-    // ======================
-    // POST
-    // ======================
-    if (req.method === 'POST') {
+    return res.status(200).json(data);
+  }
 
-      console.log('BODY:', req.body);
+  // POST
+  if (req.method === 'POST') {
 
-      const { data, error } = await supabase
-        .from('warga')
-        .insert([req.body])
-        .select();
+    const { error } = await supabase
+      .from('warga')
+      .insert([req.body]);
 
-      if (error) {
-
-        console.error('INSERT ERROR:', error);
-
-        return res.status(500).json({
-          error: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
-      }
-
-      return res.status(200).json({
-        status: 'ok',
-        data
-      });
+    if (error) {
+      return res.status(500).json(error);
     }
 
-    return res.status(405).json({
-      error: 'Method not allowed'
-    });
-
-  } catch (err) {
-
-    console.error('SERVER ERROR:', err);
-
-    return res.status(500).json({
-      error: err.message
+    return res.status(200).json({
+      status: 'ok'
     });
   }
-}
 
-if (req.method === 'PUT') {
+  // PUT
+  if (req.method === 'PUT') {
 
-  const { oldNik, ...updatedData } = req.body;
+    const { oldNik, ...updatedData } = req.body;
 
-  const { error } = await supabase
-    .from('warga')
-    .update(updatedData)
-    .eq('nik', oldNik);
+    const { error } = await supabase
+      .from('warga')
+      .update(updatedData)
+      .eq('nik', oldNik);
 
-  if (error) {
-    return res.status(500).json(error);
+    if (error) {
+      return res.status(500).json(error);
+    }
+
+    return res.status(200).json({
+      status: 'updated'
+    });
   }
 
-  return res.status(200).json({
-    status: 'updated'
+  return res.status(405).json({
+    error: 'Method not allowed'
   });
 }
