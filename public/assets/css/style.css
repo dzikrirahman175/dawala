@@ -601,4 +601,12 @@ textarea.form-control {
     table {
         min-width: 1400px;
     }
+
+    .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+}
 }
