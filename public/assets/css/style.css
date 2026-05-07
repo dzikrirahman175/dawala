@@ -581,3 +581,22 @@ textarea.form-control {
     box-shadow: var(--shadow-sm);
     transform: translateY(-1px);
 }
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+table {
+    min-width: 1400px;
+}
