@@ -18,6 +18,7 @@ export default async function handler(req, res) {
         .select('*');
 
       if (error) {
+        console.error('GET ERROR:', error);
         return res.status(500).json(error);
       }
 
@@ -29,20 +30,40 @@ export default async function handler(req, res) {
     // ======================
     if (req.method === 'POST') {
 
-      const { oldNik, ...newData } = req.body;
+      console.log('POST BODY:', req.body);
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('warga')
         .insert([req.body]);
 
       if (error) {
-        return res.status(500).json(error);
+
+        console.error('INSERT ERROR:', error);
+
+        return res.status(500).json({
+          error: error.message,
+          details: error.details,
+          hint: error.hint
+        });
       }
 
       return res.status(200).json({
-        status: 'ok'
+        status: 'ok',
+        data
       });
     }
+      return res.status(405).json({
+        error: 'Method not allowed'
+      });
+
+    } catch (err) {
+      console.error('SERVER ERROR:', err);
+
+      return res.status(500).json({
+        error: err.message
+      });
+    }
+  }
 
     // ======================
     // EDIT DATA
@@ -57,7 +78,10 @@ export default async function handler(req, res) {
         .eq('nik', oldNik);
 
       if (error) {
-        return res.status(500).json(error);
+        console.error('UPDATE ERROR:', error);
+        return res.status(500).json({
+          error: error.message
+        });
       }
 
       return res.status(200).json({
@@ -78,7 +102,10 @@ export default async function handler(req, res) {
         .eq('nik', nik);
 
       if (error) {
-        return res.status(500).json(error);
+        console.error('DELETE ERROR:', error);
+        return res.status(500).json({
+          error: error.message
+        });
       }
 
       return res.status(200).json({
@@ -89,13 +116,3 @@ export default async function handler(req, res) {
     return res.status(405).json({
       error: 'Method not allowed'
     });
-
-  } catch (err) {
-
-    console.error('API WARGA ERROR:', err);
-
-    return res.status(500).json({
-      error: err.message
-    });
-  }
-}
