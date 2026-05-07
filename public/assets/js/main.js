@@ -478,7 +478,7 @@ const WargaController = {
 
     async hapus(nik) {
         if(!confirm('Hapus warga ini?')) return;
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('currentUser'));
         try {
             const res = await fetch('/api/hapus-warga', {
                 method: 'POST',
@@ -1339,7 +1339,7 @@ const KeuanganController = {
     },
 
     async saveTransaction() {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('currentUser'));
         const data = {
             id: this.currentEditId || Date.now().toString(),
             operator: user ? user.username : 'System',
