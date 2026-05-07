@@ -447,9 +447,14 @@ const WargaController = {
             newWarga.oldNik = String(this.currentEditNik);
         }
 
-        const url = this.currentEditNik 
-        ? '/api/edit-warga' : '/api/tambah-warga';
-        const method = 'POST';
+        const method = this.currentEditNik ? 'PUT' : 'POST';
+
+        await fetch('/api/warga', {
+            method,
+            headers: { 'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newWarga)
+        });
 
         try {
            const res = await fetch(url, {
@@ -999,7 +1004,7 @@ const PenggunaController = {
             role: 'Pengurus'
         };
         try {
-            const res = await fetch('api/pengguna', {
+            const res = await fetch('/api/pengguna', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newUser)
@@ -1027,7 +1032,7 @@ const PenggunaController = {
         }
     
     try {
-        const res = await fetch('api/pengguna', {
+        const res = await fetch('/api/pengguna', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
@@ -1389,7 +1394,7 @@ const KeuanganController = {
                 console.log('Offline mode');
                 
                 // fallback localStorage
-                let local = JSON.parse(localStorage.getItem('transactions')) || [];
+                let local = storage.get('transactions') || [];
 
                 if (this.currentEditId) {
                     local = local.map(item =>
@@ -1399,7 +1404,7 @@ const KeuanganController = {
                 local.push(data);
                 }
 
-                Storage.set('transactions', local);
+                storage.set('transactions', local);
             }
                 this.currentEditId = null;
 
