@@ -493,20 +493,21 @@ const WargaController = {
                 body: JSON.stringify({ nik, operator: user ? user.username : 'System' })
             });
             const result = await res.json();
+            console.log(result);
 
             if (!res.ok) {
                 throw new Error(result.error || 'Gagal menghapus data warga');
             }
 
             alert('Data warga berhasil dihapus');
+            await this.load();
 
         } catch (err) {
             
-            console.error('Error hapus warga', err);
+            console.error('Error', err);
             
             alert('Gagal menghapus data warga');
         }
-        await this.load();
     },
 
     export() {
