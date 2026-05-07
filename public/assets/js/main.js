@@ -417,7 +417,7 @@ const WargaController = {
 
     async save(e) {
         e.preventDefault();
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+       
         const newWarga = {
             operator: user ? user.username : 'System',
             nama: document.getElementById('input-nama').value,
@@ -444,53 +444,35 @@ const WargaController = {
         };
 
         if (this.currentEditNik) {
-            newWarga.oldNik = String(this.currentEditNik);
+            newWarga.oldNik =this.currentEditNik;
         }
-
+        try {
         const method = this.currentEditNik ? 'PUT' : 'POST';
 
-        await fetch('/api/warga', {
-            method,
+        const res = await fetch('/api/warga', {
+            method: method,
             headers: { 'Content-Type': 'application/json'
             },
             body: JSON.stringify(newWarga)
         });
 
-        try {
-           const res = await fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newWarga)
-            });
-            const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data.error || 'Gagal menyimpan data warga');
-                }
-
-            console.log('berhasil:',data);
+        const result = await res.json();
+        console.log(result);
+        
+        if (!res.ok) {
+            throw new Error(result.error || 'Gagal menyimpan data warga');
+        }
+        await this.load(); // Refresh data setelah berhasil menyimpan
 
         } catch (err) {
 
-            console.error('Error:', err);
-
-            let local = JSON.parse(localStorage.getItem('warga_local')) || [];
-
-            if (this.currentEditNik) {
-                local = local.map(w => 
-                    w.nik === this.currentEditNik ? newWarga : w);
-            } else {
-                local.push(newWarga);
-            }
-            localStorage.setItem('warga_local', JSON.stringify(local));
+            console.error('Error simpan warga', err);
+            alert('Gagal menyimpan data warga. Pastikan Anda terhubung ke internet.');
         }
-
-        this.close();
-        document.getElementById('btn-save-warga').innerText = 'Simpan Data Warga';
-        this.currentEditNik = null; // Reset edit state
+        this.currentEditNik = null; // Reset edit state setelah simpan
         document.getElementById('form-warga').reset();
-        await this.load();
-    },
+        this.close();
+        },
 
     async hapus(nik) {
         if(!confirm('Hapus warga ini?')) return;
@@ -507,7 +489,7 @@ const WargaController = {
                 throw new Error(result.error || 'Gagal menghapus data warga');
             }
         } catch (err) {
-                console.error('Error:', err);
+                console.error('Error hapus warga', err);
             let local = JSON.parse(localStorage.getItem('warga_local')) || [];
             local = local.filter(w => w.nik !== nik);
             localStorage.setItem('warga_local', JSON.stringify(local));
