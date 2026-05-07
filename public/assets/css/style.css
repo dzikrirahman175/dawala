@@ -266,7 +266,7 @@ body {
     background: var(--white);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 table {
@@ -584,15 +584,21 @@ textarea.form-control {
 
     .table-wrapper {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    scrollbar-color: rgba(var(--white-rgb), .16) transparent;
+    flex-direction: column;
+    flex-basis: auto;
+    display: flex;
+    flex-shrink: 0;
+    flex-grow: 1;
     }
 
     .table-wrapper::-webkit-scrollbar {
         height: 6px;
     }
 
-    .table-wrapper::-webkit-scrollbar-thumb {
+    .table-wrapper:-webkit-scrollbar-thumb {
         background: #cbd5e1;
         border-radius: 999px;
     }
