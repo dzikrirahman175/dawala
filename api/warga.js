@@ -56,6 +56,25 @@ export default async function handler(req, res) {
     });
   }
 
+  // DELETE
+if (req.method === 'DELETE') {
+
+  const { nik } = req.body;
+
+  const { error } = await supabase
+    .from('warga')
+    .delete()
+    .eq('nik', nik);
+
+  if (error) {
+    return res.status(500).json(error);
+  }
+
+  return res.status(200).json({
+    status: 'deleted'
+  });
+}
+
   return res.status(405).json({
     error: 'Method not allowed'
   });

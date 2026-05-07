@@ -483,11 +483,12 @@ const WargaController = {
 },
 
     async hapus(nik) {
+
         if(!confirm('Hapus warga ini?')) return;
-        const user = JSON.parse(localStorage.getItem('curentUser'));
+        
         try {
-            const res = await fetch('/api/hapus-warga', {
-                method: 'POST',
+            const res = await fetch('/api/warga', {
+                method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nik, operator: user ? user.username : 'System' })
             });
@@ -496,11 +497,14 @@ const WargaController = {
             if (!res.ok) {
                 throw new Error(result.error || 'Gagal menghapus data warga');
             }
+
+            alert('Data warga berhasil dihapus');
+
         } catch (err) {
-                console.error('Error hapus warga', err);
-            let local = JSON.parse(localStorage.getItem('warga_local')) || [];
-            local = local.filter(w => w.nik !== nik);
-            localStorage.setItem('warga_local', JSON.stringify(local));
+            
+            console.error('Error hapus warga', err);
+            
+            alert('Gagal menghapus data warga');
         }
         await this.load();
     },
