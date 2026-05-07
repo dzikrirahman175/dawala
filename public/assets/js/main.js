@@ -480,9 +480,11 @@ const WargaController = {
         console.error('Error simpan warga:', err);
         alert('Gagal menyimpan data warga');
     }
+    console.log('WargaController loaded');
 },
-
     async hapus(nik) {
+
+        console.log('DELETE CLICKED', nik);
 
         if(!confirm('Hapus warga ini?')) return;
         

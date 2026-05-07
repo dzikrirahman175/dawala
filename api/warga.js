@@ -55,11 +55,15 @@ export default async function handler(req, res) {
       status: 'updated'
     });
   }
-
+//=============
   // DELETE
+//==============
 if (req.method === 'DELETE') {
 
-  const { nik } = req.body;
+  const { nik } = req.query;
+  if (!nik) {
+    return res.status(400).json({ message: "Nik required" });
+  }
 
   const { error } = await supabase
     .from('warga')
@@ -78,4 +82,9 @@ if (req.method === 'DELETE') {
   return res.status(405).json({
     error: 'Method not allowed'
   });
+
+   // contoh filter data
+  data = data.filter(w => w.nik !== nik);
+
+  return res.status(200).json({ message: "Deleted" });
 }
