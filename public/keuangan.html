@@ -255,11 +255,159 @@
             font-family: inherit;
             box-sizing: border-box;
         }
+
+        /* =========================
+   MOBILE OPTIMIZATION
+========================= */
+
+@media (max-width: 768px) {
+
+    /* Main content */
+    .main-content {
+        padding: 1rem;
+    }
+
+    /* Header */
+    .header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-title h1 {
+        font-size: 1.5rem;
+    }
+
+    .header-title p {
+        font-size: 0.9rem;
+    }
+
+    /* Finance cards */
+    .finance-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .balance-card-featured {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .balance-card-featured h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Action bar */
+    .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-wrapper,
+    .filter-select,
+    .btn-primary {
+        width: 100%;
+    }
+
+    .filter-select {
+        min-height: 48px;
+    }
+
+    .btn-primary {
+        justify-content: center;
+    }
+
+    /* Table */
+    .table-card {
+        overflow: hidden;
+        border-radius: 0.75rem;
+    }
+
+    .table-card h3 {
+        font-size: 1rem;
+    }
+
+    table {
+        min-width: 700px;
+    }
+
+    th,
+    td {
+        padding: 0.65rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: calc(100% - 2rem);
+        padding: 1.25rem;
+        border-radius: 1rem;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    /* Mobile brand */
+    .mobile-brand h2 {
+        font-size: 0.95rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        transition: transform 0.3s ease;
+        width: 260px;
+
+    }
+
+    /* User info */
+    .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+
+    .main-content {
+        padding: 0.75rem;
+    }
+
+    .balance-card-featured {
+        padding: 1.25rem;
+    }
+
+    .stat-card {
+        padding: 0.9rem;
+    }
+
+    .stat-info h3 {
+        font-size: 1rem;
+    }
+
+    .search-input {
+        font-size: 0.8rem;
+    }
+
+    .filter-select {
+        font-size: 0.8rem;
+    }
+
+    .btn-primary {
+        font-size: 0.85rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .modal-content {
+        padding: 1rem;
+    }
+    
+    .modal-overlay {
+        padding: 1rem;
+    }
+}
     </style>
-    <div class="user-info">
-    <span id="user-name"></span>
-    <span id="user-role" class="badge"></span>
-</div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -271,7 +419,7 @@
         roleEl.textContent = user.role;
 
         // Optional: styling beda
-        if (user.role = 'administrator') {
+        if (user.role == 'administrator') {
             roleEl.style.background = '#dcfce7';
             roleEl.style.color = '#166534';
         } else {
@@ -283,6 +431,10 @@
 </script>
 </head>
 <body>
+    <div class="user-info">
+        <span id="user-name"></span>
+        <span id="user-role" class="badge"></span>
+    </div>
     <div class="sidebar-overlay"></div>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -469,7 +621,7 @@
                     <h3 style="margin: 0; font-size: 1.125rem; font-weight: 700;">Riwayat Transaksi</h3>
                     <span style="font-size: 0.875rem; color: var(--text-muted);">Terurut dari yang terbaru</span>
                 </div>
-                <div style="overflow-x: auto;">
+                <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
