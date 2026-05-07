@@ -584,14 +584,7 @@ textarea.form-control {
 
     .table-wrapper {
     width: 100%;
-    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    scrollbar-color: rgba(var(--white-rgb), .16) transparent;
-    flex-direction: column;
-    flex-basis: auto;
-    display: flex;
-    flex-shrink: 0;
-    flex-grow: 1;
     }
 
     .table-wrapper::-webkit-scrollbar {

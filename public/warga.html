@@ -85,8 +85,14 @@
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             border: 1px solid var(--border);
-            overflow: hidden;
+            overflow-y: auto;
             margin-top: 0;
+            scrollbar-color: rgba(var(--white-rgb), .16) transparent;
+            flex-direction: column;
+            flex-basis: auto;
+            display: flex;
+            flex-shrink: 0;
+            flex-grow: 1;
         }
 
         table {
