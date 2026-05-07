@@ -417,6 +417,8 @@ const WargaController = {
 
     async save(e) {
         e.preventDefault();
+
+        const user = JSON.parse(localStorage.getItem('currentUser'));
        
         const newWarga = {
             operator: user ? user.username : 'System',
