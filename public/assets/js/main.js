@@ -346,33 +346,33 @@ const WargaController = {
             return;
         }
 
-        tbody.innerHTML = displayData.map(w => `
+        tbody.innerHTML = displayData.map(warga => `
             <tr>
-                <td><span class="rt-tag">${w.rt}</span></td> <!-- Tetap menggunakan w.rt karena ini adalah data RT, hanya label yang berubah -->
-                <td style="font-weight:600">${w.nama}</td>
-                <td style="color:var(--text-muted)">${w.no_kk || '-'}</td>
-                <td style="color:var(--text-muted)">${w.nik}</td>
-                <td>${w.tempat_lahir}, ${new Date(w.tanggal_lahir).toLocaleDateString('id-ID')}</td>
-                <td>${w.jenis_kelamin === 'Laki-laki' ? 'L' : 'P'}</td>
-                <td>${w.alamat}</td>
-                <td>${w.rt_num || '-'}</td>
-                <td>${w.rw_num || '-'}</td>
-                <td>${w.kelurahan}</td>
-                <td>${w.kecamatan}</td>
-                <td>${w.agama}</td>
-                <td>${w.status_perkawinan}</td>
-                <td>${w.pekerjaan}</td>
-                <td>${w.kewarganegaraan}</td>
-                <td><span class="badge ${w.status_hunian === 'Tetap' ? 'badge-success' : 'badge-warning'}">${w.status_hunian}</span></td>
-                <td><span class="badge ${w.status_finansial === 'Mampu' ? 'badge-success' : 'badge-warning'}">${w.status_finansial || '-'}</span></td>
-                <td><span class="badge ${w.kondisi === 'Difabel' ? 'badge-danger' : 'badge-info'}">${w.kondisi}</span></td>
-                <td><span class="badge ${w.status_yatim === 'Yatim' ? 'badge-danger' : 'badge-info'}">${w.status_yatim || '-'}</span></td>
-                <td><span class="badge ${w.status_kehamilan === 'Hamil' ? 'badge-danger' : 'badge-info'}">${w.status_kehamilan || '-'}</span></td>
+                <td><span class="rt-tag">${warga.rt}</span></td> <!-- Tetap menggunakan warga.rt karena ini adalah data RT, hanya label yang berubah -->
+                <td style="font-weight:600">${warga.nama}</td>
+                <td style="color:var(--text-muted)">${warga.no_kk || '-'}</td>
+                <td style="color:var(--text-muted)">${warga.nik}</td>
+                <td>${warga.tempat_lahir}, ${new Date(warga.tanggal_lahir).toLocaleDateString('id-ID')}</td>
+                <td>${warga.jenis_kelamin === 'Laki-laki' ? 'L' : 'P'}</td>
+                <td>${warga.alamat}</td>
+                <td>${warga.rt_num || '-'}</td>
+                <td>${warga.rw_num || '-'}</td>
+                <td>${warga.kelurahan}</td>
+                <td>${warga.kecamatan}</td>
+                <td>${warga.agama}</td>
+                <td>${warga.status_perkawinan}</td>
+                <td>${warga.pekerjaan}</td>
+                <td>${warga.kewarganegaraan}</td>
+                <td><span class="badge ${warga.status_hunian === 'Tetap' ? 'badge-success' : 'badge-warning'}">${warga.status_hunian}</span></td>
+                <td><span class="badge ${warga.status_finansial === 'Mampu' ? 'badge-success' : 'badge-warning'}">${warga.status_finansial || '-'}</span></td>
+                <td><span class="badge ${warga.kondisi === 'Difabel' ? 'badge-danger' : 'badge-info'}">${warga.kondisi}</span></td>
+                <td><span class="badge ${warga.status_yatim === 'Yatim' ? 'badge-danger' : 'badge-info'}">${warga.status_yatim || '-'}</span></td>
+                <td><span class="badge ${warga.status_kehamilan === 'Hamil' ? 'badge-danger' : 'badge-info'}">${warga.status_kehamilan || '-'}</span></td>
                 <td style="text-align:center; white-space: nowrap;">
-                    <button onclick="WargaController.edit('${w.nik}')" class="btn-action" style="color:var(--primary);" title="Edit">
+                    <button onclick="WargaController.edit('${warga.nik}')" class="btn-action" style="color:var(--primary);" title="Edit">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     </button>
-                    <button onclick="WargaController.hapus('${w.nik}')" class="btn-action" style="color:var(--danger)" title="Hapus">
+                    <button onclick="WargaController.hapus('${warga.nik}')" class="btn-action" style="color:var(--danger)" title="Hapus">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                     </button>
                 </td>
@@ -492,7 +492,7 @@ const WargaController = {
             const res = await fetch(`/api/warga?nik=${nik}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nik: nik, operator: user ? user.username : 'System' })
+                body: JSON.stringify({ nik: nik, operator: JSON.parse(localStorage.getItem('currentUser'))?.username || 'System' })
             });
             const result = await res.json();
             console.log(result);
