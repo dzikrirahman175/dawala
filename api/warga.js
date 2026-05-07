@@ -29,6 +29,8 @@ export default async function handler(req, res) {
     // ======================
     if (req.method === 'POST') {
 
+      const { oldNik, ...newData } = req.body;
+
       const { error } = await supabase
         .from('warga')
         .insert([req.body]);
