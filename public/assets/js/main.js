@@ -421,6 +421,7 @@ const WargaController = {
         const user = JSON.parse(localStorage.getItem('curentUser'));
        
         const newWarga = {
+            operator: user ? user.username : 'System',
             nama: document.getElementById('input-nama').value,
             no_kk: document.getElementById('input-no-kk').value,
             nik: document.getElementById('input-nik').value,
