@@ -265,7 +265,6 @@ body {
 .table-card {
     background: var(--white);
     border-radius: var(--radius-md);
-    border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
 }
@@ -599,7 +598,7 @@ textarea.form-control {
     }
 
     table {
-        min-width: 1400px;
+        width: 100%;
     }
 
     .table-scroll {
