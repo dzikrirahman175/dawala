@@ -6,10 +6,11 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
+
   try {
 
     // ======================
-    // GET DATA
+    // GET
     // ======================
     if (req.method === 'GET') {
 
@@ -18,23 +19,28 @@ export default async function handler(req, res) {
         .select('*');
 
       if (error) {
+
         console.error('GET ERROR:', error);
-        return res.status(500).json(error);
+
+        return res.status(500).json({
+          error: error.message
+        });
       }
 
       return res.status(200).json(data);
     }
 
     // ======================
-    // TAMBAH DATA
+    // POST
     // ======================
     if (req.method === 'POST') {
 
-      console.log('POST BODY:', req.body);
+      console.log('BODY:', req.body);
 
       const { data, error } = await supabase
         .from('warga')
-        .insert([req.body]);
+        .insert([req.body])
+        .select();
 
       if (error) {
 
@@ -43,7 +49,8 @@ export default async function handler(req, res) {
         return res.status(500).json({
           error: error.message,
           details: error.details,
-          hint: error.hint
+          hint: error.hint,
+          code: error.code
         });
       }
 
@@ -52,67 +59,17 @@ export default async function handler(req, res) {
         data
       });
     }
-      return res.status(405).json({
-        error: 'Method not allowed'
-      });
-
-    } catch (err) {
-      console.error('SERVER ERROR:', err);
-
-      return res.status(500).json({
-        error: err.message
-      });
-    }
-  }
-
-    // ======================
-    // EDIT DATA
-    // ======================
-    if (req.method === 'PUT') {
-
-      const { oldNik, ...updatedData } = req.body;
-
-      const { error } = await supabase
-        .from('warga')
-        .update(updatedData)
-        .eq('nik', oldNik);
-
-      if (error) {
-        console.error('UPDATE ERROR:', error);
-        return res.status(500).json({
-          error: error.message
-        });
-      }
-
-      return res.status(200).json({
-        status: 'updated'
-      });
-    }
-
-    // ======================
-    // HAPUS DATA
-    // ======================
-    if (req.method === 'DELETE') {
-
-      const { nik } = req.body;
-
-      const { error } = await supabase
-        .from('warga')
-        .delete()
-        .eq('nik', nik);
-
-      if (error) {
-        console.error('DELETE ERROR:', error);
-        return res.status(500).json({
-          error: error.message
-        });
-      }
-
-      return res.status(200).json({
-        status: 'deleted'
-      });
-    }
 
     return res.status(405).json({
       error: 'Method not allowed'
     });
+
+  } catch (err) {
+
+    console.error('SERVER ERROR:', err);
+
+    return res.status(500).json({
+      error: err.message
+    });
+  }
+}
