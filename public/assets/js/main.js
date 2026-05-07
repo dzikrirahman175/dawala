@@ -482,17 +482,17 @@ const WargaController = {
     }
     console.log('WargaController loaded');
 },
-    async hapus(nik) {
+    async hapus(user) {
 
-        console.log('DELETE CLICKED', nik);
+        console.log('DELETE CLICKED', user.nik);
 
         if(!confirm('Hapus warga ini?')) return;
         
         try {
-            const res = await fetch('/api/warga', {
+            const res = await fetch(`/api/warga?nik=${user.nik}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nik, operator: user ? user.username : 'System' })
+                body: JSON.stringify({ nik: user.nik, operator: user ? user.username : 'System' })
             });
             const result = await res.json();
             console.log(result);
