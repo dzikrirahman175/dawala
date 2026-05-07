@@ -418,10 +418,9 @@ const WargaController = {
     async save(e) {
         e.preventDefault();
 
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('curentUser'));
        
         const newWarga = {
-            operator: user ? user.username : 'System',
             nama: document.getElementById('input-nama').value,
             no_kk: document.getElementById('input-no-kk').value,
             nik: document.getElementById('input-nik').value,
@@ -457,10 +456,16 @@ const WargaController = {
             },
             body: JSON.stringify(newWarga)
         });
+        const text = await res.text();
 
-        const result = await res.json();
-        console.log(result);
-        
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch {
+            throw new Error(result.error || 'Respons tidak valid');
+        }
+        await this.load(); // Refresh data setelah berhasil menyimpan
+
         if (!res.ok) {
             throw new Error(result.error || 'Gagal menyimpan data warga');
         }
@@ -478,7 +483,7 @@ const WargaController = {
 
     async hapus(nik) {
         if(!confirm('Hapus warga ini?')) return;
-        const user = JSON.parse(localStorage.getItem('user '));
+        const user = JSON.parse(localStorage.getItem('curentUser'));
         try {
             const res = await fetch('/api/hapus-warga', {
                 method: 'POST',
