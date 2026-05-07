@@ -60,7 +60,7 @@ export default async function handler(req, res) {
 //==============
 if (req.method === 'DELETE') {
 
-  const { nik } = req.query;
+  const { nik } = req.body;
   if (!nik) {
     return res.status(400).json({ message: "Nik required" });
   }
