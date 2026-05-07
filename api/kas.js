@@ -6,6 +6,17 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
+  try {
+    // kode kas kamu disini
+
+    } catch (err) {
+        console.error(err);
+
+        res.status(500).json({
+            error: err.message
+        });
+    }
+}
   // GET DATA
   if (req.method === 'GET') {
     const { data, error } = await supabase.from('kas').select('*');
@@ -71,5 +82,4 @@ export default async function handler(req, res) {
   res.setHeader('Content-Disposition', 'attachment; filename=kas.xlsx');
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.send(buffer);
-}
-}
+};
