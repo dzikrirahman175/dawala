@@ -14,137 +14,17 @@
         }
         .modal-content {
             background: white; width: 100%; max-width: 850px;
-            border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow); max-height: 92vh;
+            border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow); max-height: 92vh; overflow-y: auto;
         }
         .table-card {
-            background: var(--white); border-radius: 1rem;
-            margin-top: 1.5rem; width: 100%; box-shadow: var(--shadow); border: 1px solid var(--border);
+            background: var(--white); border-radius: 1rem; border: 1px solid var(--border);
+            overflow: hidden; margin-top: 1.5rem;
         }
-        table {width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem; }
-        th { background: #f8fafc; padding: 1rem; text-align: left; font-weight: 600; color: #64748b; border-bottom: 1px solid var(--border); white-space: nowrap;}
-        td { padding: 1rem; border-bottom: 1px solid #f1f5f9; white-space: nowrap;}
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 1800px; }
+        th { background: #f8fafc; padding: 1rem; text-align: left; font-weight: 600; color: #64748b; border-bottom: 1px solid var(--border); }
+        td { padding: 1rem; border-bottom: 1px solid #f1f5f9; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
-
-        /* =========================
-         RESPONSIVE MOBILE
-        ========================= */
-        @media (max-width: 768px) {
-
-        /* Main content */
-        .main-content {
-            padding: 1rem;
-        }
-
-        /* Header */
-        .header-flex {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 1rem;
-        }
-
-        .header-title h1 {
-            font-size: 1.5rem;
-        }
-
-        .header-title p {
-            font-size: 0.875rem;
-        }
-
-        /* Filter area */
-        .header-flex > div:last-child {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        /* Semua input & select full width */
-        .search-wrapper,
-        .form-control,
-        .btn-primary {
-            width: 100% !important;
-            min-width: unset !important;
-        }
-
-        /* Search input */
-        .search-wrapper {
-            min-width: 100% !important;
-        }
-
-        /* Button */
-        .btn-primary {
-            justify-content: center;
-        }
-
-        /* Table */
-        .table-card {
-            background: var(--white);
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            border: 1px solid var(--border);
-            overflow-y: auto;
-            margin-top: 0;
-            scrollbar-color: rgba(var(--white-rgb), .16) transparent;
-            flex-direction: column;
-            flex-basis: auto;
-            display: flex;
-            flex-shrink: 0;
-            flex-grow: 1;
-        }
-
-        table {
-            width: 100%;
-            min-width: 1200px;
-            font-size: 0.75rem;
-        }
-
-        th,
-        td {
-            padding: 0.75rem;
-            white-space: nowrap;
-        }
-
-        /* Modal */
-        .modal-content {
-            width: 95%;
-            max-width: 95%;
-            padding: 1rem;
-            border-radius: 1rem;
-            max-height: 90vh;
-        }
-
-        /* Form grid jadi 1 kolom */
-        .form-grid {
-            grid-template-columns: 1fr !important;
-        }
-
-        /* Full width form span */
-        .form-group[style*="grid-column"] {
-            grid-column: span 1 !important;
-        }
-
-        /* Tombol modal */
-        .form-grid > div:last-child {
-            grid-column: span 1 !important;
-        }
-
-        .form-grid > div:last-child button {
-            width: 100%;
-        }
-
-        /* Mobile header */
-        .mobile-header h2 {
-            font-size: 1rem;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-        }
-    }
     </style>
 </head>
 <body>
@@ -282,7 +162,6 @@
             </header>
 
             <div class="table-card">
-                <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
