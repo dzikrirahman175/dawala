@@ -14,12 +14,12 @@
             justify-content: center; z-index: 1000; backdrop-filter: blur(4px);
         }
         .modal-content {
-            background: white; width: 100%; max-width: 500px;
+            background: white; width: 100%; max-width: 700px;
             border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow); max-height: 92vh; overflow-y: auto;
         }
         .table-card {
             background: var(--white);
-            border-radius: 0,75rem;
+            border-radius: 0.75rem;
             border: 1px solid var(--border);
             margin-top: 1.5rem; 
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -51,6 +51,21 @@
             .form-grid { 
                 grid-template-columns: 1fr; 
             } 
+        }
+        .filter-select {
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            background-color: white;
+            font-size: 0.875rem;
+            color: #334155;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25em 1.25em;
         }
 
         /* =========================
@@ -170,10 +185,10 @@
                         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         <input type="text" id="search-warga" class="search-input" placeholder="Cari Nama atau NIK..." oninput="WargaController.render()">
                     </div>
-                    <select id="filter-rt-warga" class="form-control" style="width: 130px;" onchange="WargaController.render()">
+                    <select id="filter-rt-warga" class="filter-select" style="width: 130px;" onchange="WargaController.render()">
                         <option value="">Semua Unit</option>
                     </select>
-                    <select id="filter-usia-warga" class="form-control" style="width: 150px;" onchange="WargaController.render()">
+                    <select id="filter-usia-warga" class="filter-select" style="width: 150px;" onchange="WargaController.render()">
                         <option value="">Semua Usia</option>
                         <option value="balita">Bayi/Balita (0-4th)</option>
                         <option value="anak">Anak-anak (5-11th)</option>
@@ -181,32 +196,32 @@
                         <option value="dewasa">Dewasa (19-59th)</option>
                         <option value="lansia">Lansia (60th+)</option>
                     </select>
-                    <select id="filter-kelurahan-warga" class="form-control" style="width: 150px;" onchange="WargaController.render()">
+                    <select id="filter-kelurahan-warga" class="filter-select" style="width: 150px;" onchange="WargaController.render()">
                         <option value="">Semua Wilayah</option>
                         <option value="Babakan">Babakan</option>
                         <option value="Luar Babakan">Luar Babakan</option>
                     </select>
-                    <select id="filter-hunian-warga" class="form-control" style="width: 130px;" onchange="WargaController.render()">
+                    <select id="filter-hunian-warga" class="filter-select" style="width: 130px;" onchange="WargaController.render()">
                         <option value="">Semua Hunian</option>
                         <option value="Tetap">Tetap</option>
                         <option value="Kontrak">Kontrak</option>
                     </select>
-                    <select id="filter-finansial-warga" class="form-control" style="width: 150px;" onchange="WargaController.render()">
+                    <select id="filter-finansial-warga" class="filter-select" style="width: 150px;" onchange="WargaController.render()">
                         <option value="">Semua Finansial</option>
                         <option value="Mampu">Mampu</option>
                         <option value="Tidak Mampu">Tidak Mampu</option>
                     </select>
-                    <select id="filter-kondisi-warga" class="form-control" style="width: 130px;" onchange="WargaController.render()">
+                    <select id="filter-kondisi-warga" class="filter-select" style="width: 130px;" onchange="WargaController.render()">
                         <option value="">Semua Kondisi</option>
                         <option value="Difabel">Difabel</option>
                         <option value="-">-</option>
                     </select>
-                    <select id="filter-yatim-warga" class="form-control" style="width: 130px;" onchange="WargaController.render()">
+                    <select id="filter-yatim-warga" class="filter-select" style="width: 130px;" onchange="WargaController.render()">
                         <option value="">Semua Status</option>
                         <option value="Yatim">Yatim</option>
                         <option value="-">-</option>
                     </select>
-                    <select id="filter-kehamilan-warga" class="form-control" style="width: 140px;" onchange="WargaController.render()">
+                    <select id="filter-kehamilan-warga" class="filter-select" style="width: 140px;" onchange="WargaController.render()">
                         <option value="">Semua Kehamilan</option>
                         <option value="Hamil">Hamil</option>
                         <option value="-">-</option>
