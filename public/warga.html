@@ -20,7 +20,6 @@
             background: var(--white);
             border-radius: 0,75rem;
             border: 1px solid var(--border);
-            overflow: flex;
             margin-top: 1.5rem; 
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             display: flex;
@@ -51,6 +50,37 @@
             .form-grid { 
                 grid-template-columns: 1fr; 
             } 
+        }
+
+        /* =========================
+        TABLE SCROLL MOBILE
+        ========================= */
+
+        .table-scroll{
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-scroll table{
+            min-width: 1200px;
+        }
+
+        /* IMPORTANT */
+        .main-content{
+            overflow-x: hidden;
+        }
+
+        body{
+            overflow-x: hidden;
+        }
+        .table-scroll::-webkit-scrollbar{
+            height: 6px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb{
+            background: #cbd5e1;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -189,11 +219,12 @@
             </header>
 
             <div class="table-card">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Domisili</th>
-                            <th>Nama</th>
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Domisili</th>
+                                <th>Nama</th>
                             <th>No KK</th>
                             <th>NIK</th>
                             <th>Tempat/Tgl Lahir</th>
