@@ -17,14 +17,40 @@
             border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow); max-height: 92vh; overflow-y: auto;
         }
         .table-card {
-            background: var(--white); border-radius: 1rem; border: 1px solid var(--border);
-            overflow: hidden; margin-top: 1.5rem;
+            background: var(--white);
+            border-radius: 0,75rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-top: 1.5rem; 
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 1800px; }
-        th { background: #f8fafc; padding: 1rem; text-align: left; font-weight: 600; color: #64748b; border-bottom: 1px solid var(--border); }
-        td { padding: 1rem; border-bottom: 1px solid #f1f5f9; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.75rem;
+        }
+        th { 
+            background: #f8fafc; 
+            padding: 1rem 1.5rem; 
+            text-align: left; 
+            font-weight: 600; 
+            color: #64748b; 
+            border-bottom: 1px solid var(--border);
+        }
+        td { 
+            padding: 1rem 1.5rem; 
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; gap: 1rem;
+        }
+        @media (max-width: 640px) { 
+            .form-grid { 
+                grid-template-columns: 1fr; 
+            } 
+        }
     </style>
 </head>
 <body>
