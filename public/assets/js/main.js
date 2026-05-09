@@ -516,7 +516,7 @@ const WargaController = {
     document.getElementById('modal-export').style.display = 'flex';
     },
 
-    async exportDataRT() {
+    exportDataRT() {
         try {
             const selectedRT = document.getElementById('export-rt').value;
 
