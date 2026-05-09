@@ -516,61 +516,81 @@ const WargaController = {
     document.getElementById("modal-export").style.display = 'flex';
     },
 
-    async exportDataRT() {
-        try {
-            const selectedRT = document.getElementById('export-rt').value;
+    exportDataRT: async function () {
 
-            let query = supabase
-                .from('warga')
-                .select('*');
+    try {
 
-            // filter RT jika dipilih
-            if (selectedRT) {
-                query = query.eq('domisili', selectedRT);
-            }
+        const selectedRT =
+            document.getElementById('export-rt').value;
 
-            const { data, error } = await query;
+        // ambil data dari API
+        const response =
+            await fetch('/api/warga');
 
-            if (error) throw error;
+        const data =
+            await response.json();
 
-            // format excel
-            const excelData = data.map(w => ({
-                "Domisili": w.domisili,
-                "Nama": w.nama,
-                "NIK": w.nik,
-                "Alamat": w.alamat,
-                "RT": w.rt,
-                "RW": w.rw,
-                "Pekerjaan": w.pekerjaan
-            }));
+        // filter rt
+        let filteredData = data;
 
-            // buat worksheet
-            const worksheet = XLSX.utils.json_to_sheet(excelData);
+        if (selectedRT) {
 
-            // workbook
-            const workbook = XLSX.utils.book_new();
-
-            XLSX.utils.book_append_sheet(
-                workbook,
-                worksheet,
-                "Data Warga"
+            filteredData = data.filter(
+                w => w.rt == selectedRT
             );
 
-            // nama file
-            const fileName = selectedRT
-                ? `data-${selectedRT}.xlsx`
-                : 'data-semua-rt.xlsx';
-
-            XLSX.writeFile(workbook, fileName);
-
-            // tutup modal
-            document.getElementById('modal-export').style.display = 'none';
-
-        } catch (err) {
-            console.error(err);
-            alert('Gagal export data');
         }
-    },
+
+        // format excel
+        const excelData = filteredData.map(w => ({
+
+            "Nama": w.nama,
+            "NIK": w.nik,
+            "No KK": w.no_kk,
+            "Tempat Lahir": w.tempat_lahir,
+            "Tanggal Lahir": w.tanggal_lahir,
+            "Alamat": w.alamat,
+            "RT": w.rt,
+            "RW": w.rw,
+            "Kelurahan": w.kelurahan,
+            "Kecamatan": w.kecamatan,
+            "Pekerjaan": w.pekerjaan,
+            "Agama": w.agama
+        }));
+
+        // worksheet
+        const worksheet =
+            XLSX.utils.json_to_sheet(excelData);
+
+        // workbook
+        const workbook =
+            XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Data Warga"
+        );
+
+        // nama file
+        const fileName = selectedRT
+            ? `data-rt-${selectedRT}.xlsx`
+            : 'data-semua-rt.xlsx';
+
+        // download
+        XLSX.writeFile(workbook, fileName);
+
+        // tutup modal
+        document.getElementById('modal-export').style.display = 'none';
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert('Gagal export data');
+
+    }
+},
 
     setupRTSelect() {
         const rtSelect = document.getElementById('input-rt');
