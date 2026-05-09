@@ -512,21 +512,64 @@ const WargaController = {
         }
     },
 
-    export() {
-        const allRts = storage.get('rts') || [];
-        const listRts = allRts.filter(rt => rt !== 'RW').join(', ');
-        const currentFilter = document.getElementById('filter-rt-warga')?.value || "";
-        
-        const msg = `Pilih Unit (RT) yang ingin diekspor:\n\n- Ketik nama RT (Contoh: RT 01)\n- Ketik "RW" atau kosongkan untuk SEMUA data\n\nUnit tersedia: ${listRts}`;
-        const choice = prompt(msg, currentFilter);
-        
-        if (choice === null) return; // Batal jika pengguna menekan tombol Cancel
+    pilihExportRT() {
+    document.getElementById('modal-export').style.display = 'flex';
+    },
 
-        const filterVal = (choice || '').trim();
-        const url = filterVal
-        ? `/api/download-warga?rt=${encodeURIComponent(filterVal)}`
-        : '/api/download-warga';
-        window.location.href = url;
+    async exportDataRT() {
+        try {
+            const selectedRT = document.getElementById('export-rt').value;
+
+            let query = supabase
+                .from('warga')
+                .select('*');
+
+            // filter RT jika dipilih
+            if (selectedRT) {
+                query = query.eq('nama_rt', selectedRT);
+            }
+
+            const { data, error } = await query;
+
+            if (error) throw error;
+
+            // format excel
+            const excelData = data.map(w => ({
+                "Domisili": w.nama_rt,
+                "Nama": w.nama,
+                "NIK": w.nik,
+                "Alamat": w.alamat,
+                "RT": w.rt,
+                "RW": w.rw,
+                "Pekerjaan": w.pekerjaan
+            }));
+
+            // buat worksheet
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+            // workbook
+            const workbook = XLSX.utils.book_new();
+
+            XLSX.utils.book_append_sheet(
+                workbook,
+                worksheet,
+                "Data Warga"
+            );
+
+            // nama file
+            const fileName = selectedRT
+                ? `data-${selectedRT}.xlsx`
+                : 'data-semua-rt.xlsx';
+
+            XLSX.writeFile(workbook, fileName);
+
+            // tutup modal
+            document.getElementById('modal-export').style.display = 'none';
+
+        } catch (err) {
+            console.error(err);
+            alert('Gagal export data');
+        }
     },
 
     setupRTSelect() {

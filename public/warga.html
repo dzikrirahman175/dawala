@@ -252,7 +252,7 @@
                         <option value="Hamil">Hamil</option>
                         <option value="-">-</option>
                     </select>
-                    <button class="btn-primary" onclick="WargaController.export()" style="background-color: var(--success); display: flex; align-items: center; gap: 0.5rem;" title="Export Excel">
+                    <button class="btn-primary" onclick="WargaController.pilihExportRT()" style="background-color: var(--success); display: flex; align-items: center; gap: 0.5rem;" title="Export Excel">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                         Export
                     </button>
@@ -377,9 +377,40 @@
                     <button type="submit" id="btn-save-warga" class="btn-primary">Simpan Data Warga</button>
                 </div>
             </form>
+        <div class="modal-overlay" id="modal-export">
+        <div class="modal-content" style="max-width: 400px;">
+        <h3 style="margin-bottom: 1rem;">Export Data RT</h3>
+
+        <div class="form-group">
+            <label class="form-label">Pilih RT</label>
+
+            <select id="export-rt" class="form-control">
+                <option value="">Semua RT</option>
+                <option value="RT 01">RT 01</option>
+                <option value="RT 02">RT 02</option>
+                <option value="RT 03">RT 03</option>
+                <option value="RT 04">RT 04</option>
+            </select>
+        </div>
+
+        <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+            <button class="btn-primary"
+                style="background:#94a3b8;"
+                onclick="document.getElementById('modal-export').style.display='none'">
+                Batal
+            </button>
+
+            <button class="btn-primary"
+                onclick="WargaController.exportDataRT()">
+                Download Excel
+            </button>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 
     <script src="/assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </body>
 </html>
