@@ -526,7 +526,7 @@ const WargaController = {
 
             // filter RT jika dipilih
             if (selectedRT) {
-                query = query.eq('nama_rt', selectedRT);
+                query = query.eq('domisili', selectedRT);
             }
 
             const { data, error } = await query;
@@ -535,7 +535,7 @@ const WargaController = {
 
             // format excel
             const excelData = data.map(w => ({
-                "Domisili": w.nama_rt,
+                "Domisili": w.domisili,
                 "Nama": w.nama,
                 "NIK": w.nik,
                 "Alamat": w.alamat,
