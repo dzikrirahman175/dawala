@@ -513,10 +513,10 @@ const WargaController = {
     },
 
     pilihExportRT() {
-    document.getElementById('modal-export').style.display = 'flex';
+    document.getElementById("modal-export").style.display = 'flex';
     },
 
-    exportDataRT() {
+    async exportDataRT() {
         try {
             const selectedRT = document.getElementById('export-rt').value;
 

@@ -376,22 +376,24 @@
                     <button type="button" class="btn-primary" onclick="WargaController.close()" style="background: #94a3b8;">Batal</button>
                     <button type="submit" id="btn-save-warga" class="btn-primary">Simpan Data Warga</button>
                 </div>
-
-        <div class="modal-overlay" id="modal-export">
-        <div class="modal-content" style="max-width: 400px;">
+            </form>
+        </div>
+    </div>
+<div class="modal-overlay" id="modal-export">
+    <div class="modal-content" style="max-width: 400px;">
         <h3 style="margin-bottom: 1rem;">Export Data RT</h3>
 
-        <div class="form-group">
-            <label class="form-label">Pilih RT</label>
+    <div class="form-group">
+        <label class="form-label">Pilih RT</label>
 
-            <select id="export-rt" class="form-control">
-                <option value="">Semua RT</option>
-                <option value="RT 01">RT 01</option>
-                <option value="RT 02">RT 02</option>
-                <option value="RT 03">RT 03</option>
-                <option value="RT 04">RT 04</option>
-            </select>
-        </div>
+        <select id="export-rt" class="form-control">
+            <option value="">Semua RT</option>
+            <option value="RT 01">RT 01</option>
+            <option value="RT 02">RT 02</option>
+            <option value="RT 03">RT 03</option>
+            <option value="RT 04">RT 04</option>
+        </select>
+    </div>
 
         <div style="display:flex; gap:1rem; margin-top:1.5rem;">
             <button class="btn-primary"
@@ -407,9 +409,6 @@
         </div>
     </div>
 </div>
-            </form>
-        </div>
-    </div>
 
     <script src="/assets/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
