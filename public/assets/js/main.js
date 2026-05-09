@@ -550,7 +550,7 @@ const WargaController = {
             "Tempat Lahir": w.tempat_lahir,
             "Tanggal Lahir": w.tanggal_lahir,
             "Alamat": w.alamat,
-            "RT": w.rt,
+            "RT": w.rt_num,
             "RW": w.rw_num,
             "Kelurahan": w.kelurahan,
             "Kecamatan": w.kecamatan,
