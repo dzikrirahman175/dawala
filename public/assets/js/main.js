@@ -1780,9 +1780,9 @@ async load() {
         }
     },
 
-async handleFilesSelect(this) {
+async handleFilesSelect(input) {
 
-    const files = Array.from(this.files);
+    const files = Array.from(input.files);
 
     for (const file of files) {
 
