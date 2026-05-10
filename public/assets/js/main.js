@@ -1599,21 +1599,24 @@ const GaleriController = {
         });
     },
 
-    load() {
-        // Mengambil data album dari localStorage (simulasi database galeri)
-        this.data = JSON.parse(localStorage.getItem('albums')) || [
-            {
-                id: '1',
-                activityName: 'Kerja Bakti Rutin',
-                date: '2026-02-15',
-                rt: 'RT 01',
-                description: 'Membersihkan selokan dan perapihan tanaman di area gerbang utama.',
-                photos: ['https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=800']
-            }
-        ];
-        if (!localStorage.getItem('albums')) localStorage.setItem('albums', JSON.stringify(this.data));
+    async load() {
+
+    try {
+
+        const res =
+            await fetch('/api/upload-galeri');
+
+        this.data =
+            await res.json();
+
         this.render();
-    },
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+},
 
     render() {
         const container = document.querySelector('.gallery-grid');
@@ -1680,7 +1683,10 @@ const GaleriController = {
         document.getElementById('input-date').value = album.date;
         document.getElementById('input-rt').value = album.rt;
         document.getElementById('input-description').value = album.description;
-        this.tempPhotos = [...album.photos];
+        this.tempPhotos = [...album.photos];    
+
+            // tampilkan preview foto
+        this.renderPhotoList();
 
         document.querySelector('#modal-add-album h3').innerText = 'Edit Album Kegiatan';
         document.querySelector('#form-add-album button[type="submit"]').innerText = 'Update Album';
@@ -1688,10 +1694,13 @@ const GaleriController = {
     },
 
     deleteAlbum(id) {
-        if (!confirm('Hapus album ini beserta semua dokumentasinya?')) return;
-        this.data = this.data.filter(a => a.id !== id);
-        localStorage.setItem('albums', JSON.stringify(this.data));
-        this.render();
+    await fetch('/api/upload-galeri', {
+    method: 'delete',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id })
+});
     },
 
     saveAlbum(e) {
@@ -1713,7 +1722,13 @@ const GaleriController = {
             this.data.push(albumData);
         }
 
-        localStorage.setItem('albums', JSON.stringify(this.data));
+        await fetch('/api/upload-galeri', {
+        method: this.currentEditId ? 'PUT' : 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(albumData)
+    });
         this.closeModal();
         this.render();
     },
@@ -1728,17 +1743,44 @@ const GaleriController = {
         }
     },
 
-    handleFilesSelect(input) {
-        const files = Array.from(input.files);
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.tempPhotos.push(e.target.result);
-                this.renderPhotoList();
-            };
-            reader.readAsDataURL(file);
-        });
-    },
+async handleFilesSelect(input) {
+
+    const files = Array.from(input.files);
+
+    for (const file of files) {
+
+        const fileName =
+            `${Date.now()}-${file.name}`;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+
+            const res =
+                await fetch('/api/upload-galeri', {
+                    method: 'POST',
+                    body: formData
+                });
+
+            const result =
+                await res.json();
+
+            if (result.url) {
+                this.tempPhotos.push(result.url);
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+            alert('Upload gagal');
+
+        }
+    }
+
+    this.renderPhotoList();
+},
 
     renderPhotoList() {
         const container = document.getElementById('photo-list-container');
