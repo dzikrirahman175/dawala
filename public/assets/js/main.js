@@ -1270,25 +1270,53 @@ const KeuanganController = {
         }
     },
 
-    updateSummary(filteredTransactions) {
-        const transactions = storage.get('transactions');
-        const filtered = filteredTransactions || transactions;
+updateSummary(filteredTransactions) {
 
-        const totalMasuk = filtered
-            .filter(t => t.type === 'Masuk')
-            .reduce((a, b) => a + Number(b.amount || 0), 0);
+    const transactions =
+        storage.get('transactions');
 
-        const totalKeluar = filtered
-            .filter(t => t.type === 'Keluar')
-            .reduce((a, b) => a + Number(b.amount || 0), 0);
+    const filtered =
+        filteredTransactions || transactions;
 
-        const balance = totalMasuk - totalKeluar;
+    const totalMasuk = filtered
+        .filter(t => t.type === 'Masuk')
+        .reduce((a, b) =>
+            a + Number(b.amount || 0), 0);
 
-        document.getElementById('total-saldo').innerText = formatRupiah(balance);
-        document.getElementById('total-masuk').innerText = '+ ' + formatRupiah(totalMasuk);
-        document.getElementById('total-keluar').innerText = '- ' + formatRupiah(totalKeluar);
-    },
+    const totalKeluar = filtered
+        .filter(t => t.type === 'Keluar')
+        .reduce((a, b) =>
+            a + Number(b.amount || 0), 0);
 
+    const balance =
+        totalMasuk - totalKeluar;
+
+    // ambil element
+    const saldoEl =
+        document.getElementById('total-saldo');
+
+    const masukEl =
+        document.getElementById('total-masuk');
+
+    const keluarEl =
+        document.getElementById('total-keluar');
+
+    // cek apakah element ada
+    if (saldoEl) {
+        saldoEl.innerText =
+            formatRupiah(balance);
+    }
+
+    if (masukEl) {
+        masukEl.innerText =
+            '+ ' + formatRupiah(totalMasuk);
+    }
+
+    if (keluarEl) {
+        keluarEl.innerText =
+            '- ' + formatRupiah(totalKeluar);
+    }
+},
     pilihexportData() {
         document.getElementById('kas-export').style.display = 'flex';
     },
