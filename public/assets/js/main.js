@@ -1736,8 +1736,8 @@ async load() {
             headers: {
                 'Content-Type': 'application/json'
             },
-    body: JSON.stringify({id})
-});
+            body: JSON.stringify({id})
+    });
     },
 
     async saveAlbum(e) {
@@ -1790,7 +1790,7 @@ async handleFilesSelect(input) {
             `${Date.now()}-${file.name}`;
 
         const { data, error } =
-            await supabase.storage
+            await fetch ('/api/galeri')
                 .from('galeri')
                 .upload(fileName, file);
 
@@ -1801,7 +1801,7 @@ async handleFilesSelect(input) {
         }
 
         const { data: publicUrl } =
-            supabase.storage
+            await fetch('/api/galeri')
                 .from('galeri')
                 .getPublicUrl(fileName);
 
