@@ -1703,7 +1703,7 @@ const GaleriController = {
 });
     },
 
-    saveAlbum(e) {
+    async saveAlbum(e) {
         e.preventDefault();
         if (this.tempPhotos.length === 0) return alert('Pilih minimal satu foto!');
 
