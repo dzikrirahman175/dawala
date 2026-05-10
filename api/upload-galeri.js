@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.SUPABASE_ANON_KEY
 );
 
 export default async function handler(req, res) {
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     // =========================
     if (req.method === 'POST') {
 
-        const body = req.body;
+        const body = req.query;
 
         const { data, error } =
             await supabase
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
     // =========================
     if (req.method === 'PUT') {
 
-        const body = req.body;
+        const body = req.query;
 
         const { id, ...updateData } = body;
 
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
     // =========================
     if (req.method === 'DELETE') {
 
-        const { id } = req.body;
+        const { id } = req.query;
 
         const { error } =
             await supabase
