@@ -1,3 +1,16 @@
+const SUPABASE_URL =
+    'https://vicfkqqaiawphrxnvcpf.supabase.co';
+
+const SUPABASE_ANON_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpY2ZrcXFhaWF3cGhyeG52Y3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MzYwMjUsImV4cCI6MjA5MzUxMjAyNX0.9aM3wA5m8CN_MOiwv0zaT6csdnKdh7zRoE8vvRk6Y7o';
+
+const supabase =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
 const storage = {
     get(key) {
         return JSON.parse(localStorage.getItem(key)) || [];
