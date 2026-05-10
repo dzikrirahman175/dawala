@@ -1289,14 +1289,78 @@ const KeuanganController = {
         document.getElementById('total-keluar').innerText = '- ' + formatRupiah(totalKeluar);
     },
 
-    exportData() {
-        const link = document.createElement('a');
-        link.href = '/api/kas'; // Mengambil data JSON terbaru
-        // Untuk export excel langsung dari server (jika ada endpointnya)
-        // Di sini kita arahkan ke link download warga sebagai contoh atau buat endpoint baru
-        window.location.href = '/api/download-warga'; 
-        alert('Mengunduh database lingkungan terbaru...');
+    pilihexportData() {
+        document.getElementById('kas-export').style.display = 'block';
     },
+
+    exportDataKas: async function() {
+
+        try {
+
+        const selectedRT =
+            document.getElementById('export-kas-rt').value;
+
+        // ambil data dari API
+        const response =
+            await fetch('/api/kas');
+
+        const data =
+            await response.json();
+
+        // filter rt
+        let filteredData = data;
+
+        if (selectedRT) {
+
+            filteredData = data.filter(
+                w => w.rt == selectedRT
+            );
+
+        }
+
+        // format excel
+        const excelData = filteredData.map(w => ({
+
+            "Tanggal": w.tanggal,
+            "Jenis": w.type,
+            "Deskripsi": w.description,
+            "RT": w.rt,
+            "Jumlah": w.amount
+        }));
+
+        // worksheet
+        const worksheet =
+            XLSX.utils.json_to_sheet(excelData);
+
+        // workbook
+        const workbook =
+            XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Data Kas"
+        );
+
+        // nama file
+        const fileName = selectedRT
+            ? `data-kas-rt-${selectedRT}.xlsx`
+            : 'data-kas-semua-rt.xlsx';
+
+        // download
+        XLSX.writeFile(workbook, fileName);
+
+        // tutup modal
+        document.getElementById('kas-export').style.display = 'none';
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert('Gagal export data');
+
+    }
+},
 
     renderTransactions(filter = '', rtFilter = '', typeFilter = '', yearFilter = '', monthFilter = '') {
         const transactions = storage.get('transactions');
