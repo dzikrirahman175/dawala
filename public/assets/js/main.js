@@ -1,17 +1,11 @@
-const SUPABASE_URL =
-    'https://vicfkqqaiawphrxnvcpf.supabase.co';
+const supabaseUrl = 'URL_SUPABASE';
+const supabaseKey = 'ANON_KEY';
 
-const SUPABASE_ANON_KEY =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpY2ZrcXFhaWF3cGhyeG52Y3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MzYwMjUsImV4cCI6MjA5MzUxMjAyNX0.9aM3wA5m8CN_MOiwv0zaT6csdnKdh7zRoE8vvRk6Y7o';
-
-const db =
+const supabase =
     window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
+        supabaseUrl,
+        supabaseKey
     );
-
-console.log('DB:', db);
-console.log('Storage:', db.storage);
 
 const storage = {
     get(key) {
@@ -1623,24 +1617,46 @@ const GaleriController = {
     currentPhotoIndex: 0,
 
 async load() {
-        try {
-            const res = await fetch('/api/galeri');
-            if (!res.ok) {
-                throw new Error('Gagal memuat data galeri');
-            }
-            const data = await res.json();
-            storage.set('galeri', data);
-        } catch (err) {
-            console.log('Server offline, pakai localStorage');
-        }
-    },
+    try {
 
-    init() {
-        this.setupRTFilter();
-        this.load();
-        const form = document.getElementById('form-add-album');
-        if (form) form.addEventListener('submit', (e) => this.saveAlbum(e));
-    },
+        const res = await fetch('/api/galeri');
+
+        if (!res.ok) {
+            throw new Error('Gagal memuat data galeri');
+        }
+
+        const data = await res.json();
+
+        this.data = data; // WAJIB
+        storage.set('galeri', data);
+
+        this.render();
+
+    } catch (err) {
+
+        console.log('Server offline, pakai localStorage');
+
+        this.data = storage.get('galeri') || [];
+        this.render();
+    }
+},
+
+    async init() {
+
+    this.setupRTFilter();
+
+    await this.load();
+
+    const form =
+        document.getElementById('form-add-album');
+
+    if (form) {
+        form.addEventListener(
+            'submit',
+            (e) => this.saveAlbum(e)
+        );
+    }
+},
 
     setupRTFilter() {
         const selects = [document.getElementById('filter-rt-galeri'), document.getElementById('input-rt')];
@@ -1676,7 +1692,7 @@ async load() {
         container.innerHTML = filtered.map(a => `
             <div class="album-card">
                 <div class="album-image-wrapper">
-                    <img src="${a.photos[0]}" class="album-image" alt="${a.activityname}">
+                    <img src="${a.photos?.length || 0}" class="album-image" alt="${a.activityname}">
                     <span class="album-badge-rt">${a.rt}</span>
                     <span class="album-badge-count">${a.photos.length} Foto</span>
                 </div>
@@ -1694,17 +1710,27 @@ async load() {
         `).join('');
     },
 
-    openModal() {
-        if (!this.currentEditId) {
-            document.getElementById('form-add-album').reset();
-            this.tempPhotos = [];
-            document.querySelector('#modal-add-album h3').innerText = 'Tambah Album Kegiatan';
-            document.querySelector('#form-add-album button[type="submit"]').innerText = 'Simpan Album';
-        }
-        document.getElementById('modal-add-album').style.display = 'flex';
-        this.setupRTFilter(); // Refresh list RT saat buka modal
-        this.renderPhotoList();
-    },
+   openModal() {
+
+    if (!this.currentEditId) {
+
+        document.getElementById('form-add-album').reset();
+
+        this.tempPhotos = [];
+
+        document.querySelector('#modal-add-album h3').innerText =
+            'Tambah Album Kegiatan';
+
+        document.querySelector('#form-add-album button[type="submit"]').innerText =
+            'Simpan Album';
+    }
+
+    document.getElementById('modal-add-album').style.display = 'flex';
+
+    this.setupRTFilter();
+
+    this.renderPhotoList();
+},
 
     closeModal() {
         this.currentEditId = null;
@@ -1716,7 +1742,7 @@ async load() {
         if (!galeri) return;
 
         this.currentEditId = id;
-        document.getElementById('input-activityName').value = galeri.activityname;
+        document.getElementById('input-activityname').value = galeri.activityname;
         document.getElementById('input-date').value = galeri.date;
         document.getElementById('input-rt').value = galeri.rt;
         document.getElementById('input-description').value = galeri.description;
@@ -1731,14 +1757,22 @@ async load() {
     },
 
     async deleteAlbum(id) {
-        await fetch('/api/galeri', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({id})
+
+    if (!confirm('Hapus album ini?')) return;
+
+    await fetch('/api/galeri', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
     });
-    },
+
+    this.data =
+        this.data.filter(a => a.id !== id);
+
+    this.render();
+},
 
     async saveAlbum(e) {
         e.preventDefault();
@@ -1746,7 +1780,7 @@ async load() {
 
         const albumData = {
             id: this.currentEditId || Date.now().toString(),
-            activityname: document.getElementById('input-activityName').value,
+            activityname: document.getElementById('input-activityname').value,
             date: document.getElementById('input-date').value,
             rt: document.getElementById('input-rt').value,
             description: document.getElementById('input-description').value,
@@ -1766,6 +1800,8 @@ async load() {
         },
         body: JSON.stringify(albumData)
     });
+
+    await this.load(); // Reload data terbaru dari server
         this.closeModal();
         this.render();
     },
