@@ -1607,6 +1607,19 @@ const GaleriController = {
     currentLightboxAlbum: null,
     currentPhotoIndex: 0,
 
+async load() {
+        try {
+            const res = await fetch('/api/upload-galeri');
+            if (!res.ok) {
+                throw new Error('Gagal memuat data galeri');
+            }
+            const data = await res.json();
+            storage.set('galeri', data);
+        } catch (err) {
+            console.log('Server offline, pakai localStorage');
+        }
+    },
+
     init() {
         this.setupRTFilter();
         this.load();
@@ -1627,25 +1640,6 @@ const GaleriController = {
         });
     },
 
-    async load() {
-
-    try {
-
-        const res =
-            await fetch('/api/upload-galeri');
-
-        this.data =
-            await res.json();
-
-        this.render();
-
-    } catch (err) {
-
-        console.error(err);
-
-    }
-},
-
     render() {
         const container = document.querySelector('.gallery-grid');
         if (!container) return;
@@ -1655,7 +1649,7 @@ const GaleriController = {
 
         const filtered = this.data.filter(a => {
             const matchRT = !filterRT || a.rt === filterRT;
-            const matchSearch = !searchVal || a.activityName.toLowerCase().includes(searchVal);
+            const matchSearch = !searchVal || a.activityname.toLowerCase().includes(searchVal);
             return matchRT && matchSearch;
         });
 
@@ -1667,13 +1661,13 @@ const GaleriController = {
         container.innerHTML = filtered.map(a => `
             <div class="album-card">
                 <div class="album-image-wrapper">
-                    <img src="${a.photos[0]}" class="album-image" alt="${a.activityName}">
+                    <img src="${a.photos[0]}" class="album-image" alt="${a.activityname}">
                     <span class="album-badge-rt">${a.rt}</span>
                     <span class="album-badge-count">${a.photos.length} Foto</span>
                 </div>
                 <div class="album-content">
                     <div class="album-date">${new Date(a.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                    <h3 class="album-title">${a.activityName}</h3>
+                    <h3 class="album-title">${a.activityname}</h3>
                     <p class="album-desc">${a.description}</p>
                     <div class="album-footer">
                         <button class="btn-primary" onclick="GaleriController.viewAlbum('${a.id}')" style="background: var(--text-muted);">👁️ Lihat</button>
@@ -1703,15 +1697,15 @@ const GaleriController = {
     },
 
     editAlbum(id) {
-        const album = this.data.find(a => a.id === id);
-        if (!album) return;
+        const galeri = this.data.find(a => a.id === id);
+        if (!galeri) return;
 
         this.currentEditId = id;
-        document.getElementById('input-activityName').value = album.activityName;
-        document.getElementById('input-date').value = album.date;
-        document.getElementById('input-rt').value = album.rt;
-        document.getElementById('input-description').value = album.description;
-        this.tempPhotos = [...album.photos];    
+        document.getElementById('input-activityName').value = galeri.activityname;
+        document.getElementById('input-date').value = galeri.date;
+        document.getElementById('input-rt').value = galeri.rt;
+        document.getElementById('input-description').value = galeri.description;
+        this.tempPhotos = [...galeri.photos];    
 
             // tampilkan preview foto
         this.renderPhotoList();
@@ -1727,7 +1721,7 @@ const GaleriController = {
             headers: {
                 'Content-Type': 'application/json'
             },
-    body: JSON.stringify({ id })
+    body: JSON.stringify({id})
 });
     },
 
@@ -1737,7 +1731,7 @@ const GaleriController = {
 
         const albumData = {
             id: this.currentEditId || Date.now().toString(),
-            activityName: document.getElementById('input-activityName').value,
+            activityname: document.getElementById('input-activityName').value,
             date: document.getElementById('input-date').value,
             rt: document.getElementById('input-rt').value,
             description: document.getElementById('input-description').value,
@@ -1840,10 +1834,10 @@ async handleFilesSelect(input) {
     },
 
     viewAlbum(id) {
-        const album = this.data.find(a => a.id === id);
-        if (!album || !album.photos.length) return;
+        const galeri = this.data.find(a => a.id === id);
+        if (!galeri || !galeri.photos.length) return;
 
-        this.currentLightboxAlbum = album;
+        this.currentLightboxAlbum = galeri;
         this.currentPhotoIndex = 0;
         this.updateLightbox();
         document.getElementById('lightbox-overlay').style.display = 'flex';
@@ -1856,7 +1850,7 @@ async handleFilesSelect(input) {
 
         const currentPhoto = this.currentLightboxAlbum.photos[this.currentPhotoIndex];
         img.src = currentPhoto;
-        caption.innerText = `${this.currentLightboxAlbum.activityName} (${this.currentPhotoIndex + 1} / ${this.currentLightboxAlbum.photos.length})`;
+        caption.innerText = `${this.currentLightboxAlbum.activityname} (${this.currentPhotoIndex + 1} / ${this.currentLightboxAlbum.photos.length})`;
     },
 
     nextPhoto() {
