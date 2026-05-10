@@ -1,5 +1,5 @@
-const supabaseUrl = 'URL_SUPABASE';
-const supabaseKey = 'ANON_KEY';
+const supabaseUrl = 'https://vicfkqqaiawphrxnvcpf.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpY2ZrcXFhaWF3cGhyeG52Y3BmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MzYwMjUsImV4cCI6MjA5MzUxMjAyNX0.9aM3wA5m8CN_MOiwv0zaT6csdnKdh7zRoE8vvRk6Y7o';
 
 const supabase =
     window.supabase.createClient(
