@@ -1823,7 +1823,7 @@ async handleFilesSelect(input) {
             `${Date.now()}-${file.name}`;
 
         const { data, error } =
-            await supabase.storage
+            await window.supabaseClient.storage
                 .from('galeri')
                 .upload(fileName, file);
 
@@ -1834,7 +1834,7 @@ async handleFilesSelect(input) {
         }
 
         const { data: publicUrl } =
-            supabase.storage
+            window.supabaseClient.storage
                 .from('galeri')
                 .getPublicUrl(fileName);
 
