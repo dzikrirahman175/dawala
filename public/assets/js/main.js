@@ -1609,7 +1609,7 @@ const GaleriController = {
 
 async load() {
         try {
-            const res = await fetch('/api/upload-galeri');
+            const res = await fetch('/api/galeri');
             if (!res.ok) {
                 throw new Error('Gagal memuat data galeri');
             }
@@ -1716,7 +1716,7 @@ async load() {
     },
 
     async deleteAlbum(id) {
-        await fetch('/api/upload-galeri', {
+        await fetch('/api/galeri', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -1744,7 +1744,7 @@ async load() {
             this.data.push(albumData);
         }
 
-        await fetch('/api/upload-galeri', {
+        await fetch('/api/galeri', {
         method: this.currentEditId ? 'PUT' : 'POST',
         headers: {
         'Content-Type': 'application/json'
@@ -1771,46 +1771,28 @@ async handleFilesSelect(input) {
 
     for (const file of files) {
 
-        const formData = new FormData();
-        formData.append('file', file);
+        const fileName =
+            `${Date.now()}-${file.name}`;
 
-        try {
+        const { data, error } =
+            await supabase.storage
+                .from('galeri')
+                .upload(fileName, file);
 
-            const res = await fetch('/api/upload-galeri', {
-                method: 'POST',
-                body: formData
-            });
-
-            // ambil text dulu
-            const text = await res.text();
-
-            console.log(text);
-
-            // cek response gagal
-            if (!res.ok) {
-
-                alert('Server upload error');
-                continue;
-
-            }
-
-            // baru parse json
-            const result = JSON.parse(text);
-
-            if (result.url) {
-
-                this.tempPhotos.push(result.url);
-
-            }
-
-        } catch (err) {
-
-            console.error(err);
-
+        if (error) {
+            console.error(error);
             alert('Upload gagal');
-
+            continue;
         }
 
+        const { data: publicUrl } =
+            supabase.storage
+                .from('galeri')
+                .getPublicUrl(fileName);
+
+        this.tempPhotos.push(
+            publicUrl.publicUrl
+        );
     }
 
     this.renderPhotoList();
