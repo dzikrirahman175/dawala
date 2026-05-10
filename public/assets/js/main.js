@@ -1782,9 +1782,15 @@ async load() {
 
 async handleFilesSelect(input) {
 
-    const files = Array.from(input.files);
+    if (!input || !input.files) {
+        console.error('Input file tidak ditemukan');
+        return;
+    }
 
-    for (const file of files) {
+    const files =
+        Array.from(input.files);
+
+    for (const file of files) { 
 
         const fileName =
             `${Date.now()}-${file.name}`;
