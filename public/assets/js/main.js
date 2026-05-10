@@ -1372,8 +1372,8 @@ const KeuanganController = {
             const matchSearch = desc.includes(filter.toLowerCase());
             const matchRT = !rtFilter || t.rt === rtFilter;
             const matchType = !typeFilter || t.type === typeFilter;
-            const matchYear = !yearFilter || new Date(t.date).getFullYear().toString() === yearFilter;
-            const matchMonth = !monthFilter || (new Date(t.date).getMonth() + 1).toString() === monthFilter;
+            const matchYear = !yearFilter || new Date(t.tanggal).getFullYear().toString() === yearFilter;
+            const matchMonth = !monthFilter || (new Date(t.tanggal).getMonth() + 1).toString() === monthFilter;
             return (
                 matchSearch && 
                 matchRT && 
@@ -1392,7 +1392,7 @@ const KeuanganController = {
 
         tbody.innerHTML = filtered.map(t => `
             <tr>
-                <td>${new Date(t.date).toLocaleDateString('id-ID')}</td>
+                <td>${new Date(t.tanggal).toLocaleDateString('id-ID')}</td>
                 <td>${t.type}</td>
                 <td>${t.description}</td>
                 <td>${t.rt}</td>
@@ -1468,7 +1468,7 @@ const KeuanganController = {
         
         this.setupRTSelectModal();
 
-        document.getElementById('input-date').value = t.date;
+        document.getElementById('input-date').value = t.tanggal;
         document.getElementById('input-type').value = t.type;
         document.getElementById('input-amount').value = t.amount;
         document.getElementById('input-rt').value = t.rt;
@@ -1483,7 +1483,7 @@ const KeuanganController = {
         const data = {
             id: this.currentEditId || Date.now().toString(),
             operator: user ? user.username : 'System',
-            date: document.getElementById('input-date').value,
+            tanggal: document.getElementById('input-date').value,
             type: document.getElementById('input-type').value,
             amount: parseInt(document.getElementById('input-amount').value),
             rt: document.getElementById('input-rt').value,
@@ -1509,7 +1509,9 @@ const KeuanganController = {
             }
 
                 if (!res.ok){ 
-                    throw new Error('Server error');
+                    const text = await res.text();
+                    console.log(text);
+                    throw new Error(text);
                 }
                 // reload data terbaru
                 await this.loadFromServer();
@@ -1549,8 +1551,11 @@ const KeuanganController = {
                 body: JSON.stringify({ id })
             });
 
-            if (!res.ok) {throw new Error('Server error');
-        }
+            if (!res.ok) {
+                const text = await res.text();
+                console.log(text);
+                throw new Error(text);
+            }
 
             await this.loadFromServer();
         
