@@ -1780,9 +1780,9 @@ async load() {
         }
     },
 
-async handleFilesSelect(input) {
+async handleFilesSelect(this) {
 
-    const files = Array.from(input.files);
+    const files = Array.from(this.files);
 
     for (const file of files) {
 
@@ -1790,7 +1790,7 @@ async handleFilesSelect(input) {
             `${Date.now()}-${file.name}`;
 
         const { data, error } =
-            await fetch ('/api/galeri')
+            await supabase.storage
                 .from('galeri')
                 .upload(fileName, file);
 
@@ -1801,7 +1801,7 @@ async handleFilesSelect(input) {
         }
 
         const { data: publicUrl } =
-            await fetch('/api/galeri')
+            supabase.storage
                 .from('galeri')
                 .getPublicUrl(fileName);
 
