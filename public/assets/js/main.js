@@ -1626,10 +1626,9 @@ async load() {
         }
 
         const data = await res.json();
-
         this.data = data; // WAJIB
-        storage.set('galeri', data);
 
+        storage.set('galeri', data);
         this.render();
 
     } catch (err) {
