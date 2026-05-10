@@ -1290,7 +1290,7 @@ const KeuanganController = {
     },
 
     pilihexportData() {
-        document.getElementById('kas-export').style.display = 'block';
+        document.getElementById('kas-export').style.display = 'flex';
     },
 
     exportDataKas: async function() {
