@@ -1777,25 +1777,36 @@ async handleFilesSelect(input) {
 
     for (const file of files) {
 
-        const fileName =
-            `${Date.now()}-${file.name}`;
-
         const formData = new FormData();
         formData.append('file', file);
 
         try {
 
-            const res =
-                await fetch('/api/upload-galeri', {
-                    method: 'POST',
-                    body: formData
-                });
+            const res = await fetch('/api/upload-galeri', {
+                method: 'POST',
+                body: formData
+            });
 
-            const result =
-                await res.json();
+            // ambil text dulu
+            const text = await res.text();
+
+            console.log(text);
+
+            // cek response gagal
+            if (!res.ok) {
+
+                alert('Server upload error');
+                continue;
+
+            }
+
+            // baru parse json
+            const result = JSON.parse(text);
 
             if (result.url) {
+
                 this.tempPhotos.push(result.url);
+
             }
 
         } catch (err) {
@@ -1805,6 +1816,7 @@ async handleFilesSelect(input) {
             alert('Upload gagal');
 
         }
+
     }
 
     this.renderPhotoList();
