@@ -1693,12 +1693,12 @@ const GaleriController = {
         this.openModal();
     },
 
-    deleteAlbum(id) {
-    await fetch('/api/upload-galeri', {
-    method: 'delete',
-    headers: {
-        'Content-Type': 'application/json'
-    },
+    async deleteAlbum(id) {
+        await fetch('/api/upload-galeri', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
     body: JSON.stringify({ id })
 });
     },
