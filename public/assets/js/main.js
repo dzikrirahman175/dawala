@@ -1691,7 +1691,7 @@ async load() {
         container.innerHTML = filtered.map(a => `
             <div class="album-card">
                 <div class="album-image-wrapper">
-                    <img src="${a.photos?.length || 0}" class="album-image" alt="${a.activityname}">
+                    <img src="${a.photos[0]}" class="album-image" alt="${a.activityname}">
                     <span class="album-badge-rt">${a.rt}</span>
                     <span class="album-badge-count">${a.photos.length} Foto</span>
                 </div>
