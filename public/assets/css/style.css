@@ -90,8 +90,10 @@ body {
     display: flex;
     flex-direction: column;
     position: fixed;
-    height: 100%;
+    height: 100vh;
     z-index: 100;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .sidebar-brand {
@@ -479,11 +481,14 @@ textarea.form-control {
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;
         box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+        height: 100vh;
+        overflow-y: auto;
+        padding-bottom: 2rem;
     }
 
     .sidebar.is-open {
