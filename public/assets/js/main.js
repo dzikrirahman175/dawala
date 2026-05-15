@@ -354,8 +354,7 @@ const WargaController = {
             tbody.innerHTML = '<tr><td colspan="21" style="text-align:center">Tidak ada data warga yang sesuai kriteria</td></tr>';
             return;
         }
-
-        console.log(warga.status_finansial);
+        
         tbody.innerHTML = displayData.map(warga => `
             <tr>
                 <td><span class="rt-tag">${warga.rt}</span></td> <!-- Tetap menggunakan warga.rt karena ini adalah data RT, hanya label yang berubah -->
