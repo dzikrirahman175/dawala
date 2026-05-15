@@ -373,7 +373,8 @@ const WargaController = {
                 <td>${warga.pekerjaan}</td>
                 <td>${warga.kewarganegaraan}</td>
                 <td><span class="badge ${warga.status_hunian === 'Tetap' ? 'badge-success' : 'badge-warning'}">${warga.status_hunian}</span></td>
-                <td><span class="badge ${warga.status_finansial === 'Mampu' ? 'badge-success' : 'badge-warning'}">${warga.status_finansial || '-'}</span></td>
+                <td><span class="badge ${warga.status_finansial === 'Mampu' 
+                    ? 'badge-success' : 'badge-warning'}">${warga.status_finansial || '-'}</span></td>
                 <td><span class="badge ${warga.kondisi === 'Difabel' ? 'badge-danger' : 'badge-info'}">${warga.kondisi}</span></td>
                 <td><span class="badge ${warga.status_yatim === 'Yatim' ? 'badge-danger' : 'badge-info'}">${warga.status_yatim || '-'}</span></td>
                 <td><span class="badge ${warga.status_kehamilan === 'Hamil' ? 'badge-danger' : 'badge-info'}">${warga.status_kehamilan || '-'}</span></td>
@@ -414,7 +415,7 @@ const WargaController = {
         document.getElementById('input-perkawinan').value = warga.status_perkawinan;
         document.getElementById('input-kwn').value = warga.kewarganegaraan;
         document.getElementById('input-status-hunian').value = warga.status_hunian;
-        document.getElementById('input-finansial').value = warga.status_finansial || 'Mampu';
+        document.getElementById('input-finansial').value = warga.status_finansial;
         document.getElementById('input-kondisi').value = warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-');
         document.getElementById('input-yatim').value = warga.status_yatim || '-';
         document.getElementById('input-kehamilan').value = warga.status_kehamilan || '-';
