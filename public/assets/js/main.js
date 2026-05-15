@@ -355,6 +355,7 @@ const WargaController = {
             return;
         }
 
+        console.log(warga.status_finansial);
         tbody.innerHTML = displayData.map(warga => `
             <tr>
                 <td><span class="rt-tag">${warga.rt}</span></td> <!-- Tetap menggunakan warga.rt karena ini adalah data RT, hanya label yang berubah -->
