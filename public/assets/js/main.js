@@ -909,22 +909,34 @@ const DashboardController = {
                 finansialContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Tidak ada data finansial yang valid</p>';
                 return;
             }
-            const mampu = fData.filter(w => (w.status_finansial || '').toString().trim().toLowerCase() === 'mampu').length;
-            const tidakMampu = fData.filter(w => (w.status_finansial || '').toString().trim().toLowerCase() === 'tidak mampu').length;
-            const mampuPct = Math.round((mampu / total) * 100);
-            const tidakMampuPct = Math.round((tidakMampu / total) * 100);
-
+            const SangatMiskin = fData.filter(w => (w.status_finansial || '').toString().trim().toLowerCase() === 'sangat miskin').length;
+            const sangatMiskinPct = Math.round((SangatMiskin / total) * 100);
+            const Miskin = fData.filter(w => (w.status_finansial || '').toString().trim().toLowerCase() === 'miskin').length;
+            const miskinPct = Math.round((Miskin / total) * 100);
+            const RentanMiskin = fData.filter(w => (w.status_finansial || '').toString().trim().toLowerCase() === 'rentan miskin').length;
+            const rentanMiskinPct = Math.round((RentanMiskin / total) * 100);
+            const Mampu = fData.filter(w => (w.status_finansial || '').toString().trim().toLowerCase() === 'mampu').length;
+            const mampuPct = Math.round((Mampu / total) * 100);
+            
             finansialContainer.innerHTML = `
                 <div class="pie-chart-wrapper">
                     <div class="pie-chart" style="background: conic-gradient(#059669 ${mampuPct}%, #ea580c 0);"></div>
                     <div class="pie-legend">
                         <div class="legend-item">
                             <div class="legend-color" style="background: #059669;"></div>
-                            <span>Mampu: <strong>${mampu}</strong> (${mampuPct}%)</span>
+                            <span>Sangat Miskin: <strong>${SangatMiskin}</strong> (${sangatMiskinPct}%)</span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background: #ea580c;"></div>
-                            <span>Tidak Mampu: <strong>${tidakMampu}</strong> (${tidakMampuPct}%)</span>
+                            <span>Miskin: <strong>${Miskin}</strong> (${miskinPct}%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ea580c;"></div>
+                            <span>Rentan Miskin: <strong>${RentanMiskin}</strong> (${rentanMiskinPct}%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #059669;"></div>
+                            <span>Mampu: <strong>${Mampu}</strong> (${mampuPct}%)</span>
                         </div>
                     </div>
                 </div>
