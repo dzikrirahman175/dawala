@@ -706,7 +706,7 @@ const DashboardController = {
             const totalDifabel = warga.filter(w => w.kondisi === 'Difabel').length;
             const wargaBabakan = warga.filter(w => (w.kelurahan || '').toString().trim().toLowerCase() === 'babakan').length;
             const wargaLuarBabakan = warga.filter(w => (w.kelurahan || '').toString().trim().toLowerCase() !== 'babakan').length;
-            const totalTidakMampu = warga.filter(w => w.status_finansial === 'Tidak Mampu').length;
+            const totalTidakMampu = warga.filter(w => w.status_finansial === 'Sangat Miskin').length;
             const totalYatim = warga.filter(w => w.status_yatim === 'Yatim').length;
             const totalKehamilan = warga.filter(w => w.status_kehamilan === 'Hamil').length;
             const totalKK = new Set(warga.map(w => String(w.no_kk || '').trim()).filter(kk => kk && kk !== '' && kk !== '-')).size;
