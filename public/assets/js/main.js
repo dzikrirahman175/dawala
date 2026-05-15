@@ -415,7 +415,7 @@ const WargaController = {
         document.getElementById('input-perkawinan').value = warga.status_perkawinan;
         document.getElementById('input-kwn').value = warga.kewarganegaraan;
         document.getElementById('input-status-hunian').value = warga.status_hunian;
-        document.getElementById('input-finansial').value = warga.status_finansial;
+        document.getElementById('input-finansial').value = warga.status_finansial || '-';
         document.getElementById('input-kondisi').value = warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-');
         document.getElementById('input-yatim').value = warga.status_yatim || '-';
         document.getElementById('input-kehamilan').value = warga.status_kehamilan || '-';
@@ -921,10 +921,10 @@ const DashboardController = {
             
             finansialContainer.innerHTML = `
                 <div class="pie-chart-wrapper">
-                    <div class="pie-chart" style="background: conic-gradient(#059669 ${mampuPct}%, #ea580c 0);"></div>
+                    <div class="pie-chart" style="background: conic-gradient(#059669 ${mampuPct}%, #059669 0);"></div>
                     <div class="pie-legend">
                         <div class="legend-item">
-                            <div class="legend-color" style="background: #059669;"></div>
+                            <div class="legend-color" style="background: #ff0000;"></div>
                             <span>Sangat Miskin: <strong>${SangatMiskin}</strong> (${sangatMiskinPct}%)</span>
                         </div>
                         <div class="legend-item">
@@ -932,7 +932,7 @@ const DashboardController = {
                             <span>Miskin: <strong>${Miskin}</strong> (${miskinPct}%)</span>
                         </div>
                         <div class="legend-item">
-                            <div class="legend-color" style="background: #ea580c;"></div>
+                            <div class="legend-color" style="background: #ffe600;"></div>
                             <span>Rentan Miskin: <strong>${RentanMiskin}</strong> (${rentanMiskinPct}%)</span>
                         </div>
                         <div class="legend-item">
