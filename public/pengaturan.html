@@ -177,7 +177,7 @@
 
     <script>
         const user = JSON.parse(localStorage.getItem('user'));
-        if (user?.role !== 'administrator') {
+        if (user?.role !== 'Administrator') {
         alert('Hanya dapat diakses admin');
         window.location.href = '/home';
 }
