@@ -1772,18 +1772,47 @@ async load() {
 
     if (!confirm('Hapus album ini?')) return;
 
-    await fetch('/api/galeri', {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id })
-    });
+    // cari data album
+    const album =
+        this.data.find(a => a.id === id);
 
-    this.data =
-        this.data.filter(a => a.id !== id);
+    if (!album) return;
 
-    this.render();
+    try {
+
+        // hapus semua file dari storage
+        for (const photoUrl of album.photos) {
+
+            // ambil nama file dari URL
+            const fileName =
+                photoUrl.split('/').pop();
+
+            const { error } =
+                await supabase.storage
+                    .from('galeri')
+                    .remove([fileName]);
+
+            if (error) {
+                console.error(error);
+            }
+        }
+
+        await fetch('/api/galeri', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id })
+        });
+
+        await this.load(); // Reload data terbaru dari server
+        
+        this.render();
+
+    } catch (err) {
+        console.error(err);
+        alert('Gagal menghapus album');
+    }
 },
 
     async saveAlbum(e) {
