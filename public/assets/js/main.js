@@ -277,6 +277,22 @@ const WargaController = {
     data: [],
     currentEditNik: null,
 
+    toggleFamily(index) {
+
+    const el =
+        document.getElementById(`family-${index}`);
+
+    if (el.style.display === 'none') {
+
+        el.style.display = 'block';
+
+    } else {
+
+        el.style.display = 'none';
+
+    }
+},
+
     async load() {
         try {
             const res = await fetch('/api/warga');
@@ -388,6 +404,72 @@ const WargaController = {
             </tr>
         `).join('');
     },
+
+renderKeluarga(data) {
+
+    const container =
+        document.getElementById('keluarga-container');
+
+    const grouped = {};
+
+    data.forEach(warga => {
+
+        if (!grouped[warga.no_kk]) {
+            grouped[warga.no_kk] = [];
+        }
+
+        grouped[warga.no_kk].push(warga);
+
+    });
+
+    container.innerHTML =
+        Object.entries(grouped)
+        .map(([noKK, anggota], index) => {
+
+            const kepala =
+                anggota.find(a =>
+                    a.hubungan_keluarga === 'Kepala Keluarga'
+                ) || anggota[0];
+
+            return `
+                <div class="family-card">
+
+                    <div class="family-header"
+                        onclick="WargaController.toggleFamily(${index})">
+
+                        <h3>${kepala.nama}</h3>
+
+                        <p>KK: ${noKK}</p>
+
+                        <small>
+                            ${anggota.length} anggota
+                        </small>
+
+                    </div>
+
+                    <div class="family-body"
+                        id="family-${index}"
+                        style="display:none;">
+
+                        ${anggota.map(a => `
+                            <div class="member-item">
+
+                                <b>${a.nama}</b>
+
+                                <span>
+                                    ${a.hubungan_keluarga}
+                                </span>
+
+                            </div>
+                        `).join('')}
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join('');
+},
 
     open() { document.getElementById('modal-warga').style.display = 'flex'; },
     close() { document.getElementById('modal-warga').style.display = 'none'; },

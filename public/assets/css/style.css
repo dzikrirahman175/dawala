@@ -586,4 +586,23 @@ textarea.form-control {
     box-shadow: var(--shadow-sm);
     transform: translateY(-1px);
 }
-    
+
+.family-card{
+    background:#fff;
+    border-radius:1rem;
+    padding:1rem;
+    margin-bottom:1rem;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+
+.family-header{
+    cursor:pointer;
+}
+
+.member-item{
+    padding:.75rem 0;
+    border-top:1px solid #eee;
+
+    display:flex;
+    justify-content:space-between;
+}
