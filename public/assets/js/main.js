@@ -403,6 +403,9 @@ const WargaController = {
                 </td>
             </tr>
         `).join('');
+
+        // Setelah render tabel, panggil renderKeluarga untuk menampilkan data keluarga
+        this.renderKeluarga(this.data);
     },
 
 renderKeluarga(data) {
