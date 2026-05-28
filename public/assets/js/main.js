@@ -373,17 +373,6 @@ const groupedData = Object.values(
     }, {})
 );
 
-function toggleFamily(noKK) {
-    const row = document.getElementById(`family-${noKK}`);
-
-    if (!row) return;
-
-    row.style.display =
-        row.style.display === 'none'
-            ? 'table-row'
-            : 'none';
-}
-
 tbody.innerHTML = groupedData.map(keluarga => `
     <tr class="family-row" onclick="toggleFamily('${keluarga.no_kk}')">
         <td>
@@ -2067,3 +2056,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (galeriPage) GaleriController.init();
     }
 });
+
+function toggleFamily(noKK) {
+    const row = document.getElementById(`family-${noKK}`);
+
+    if (!row) return;
+
+    row.style.display =
+        row.style.display === 'none'
+            ? 'table-row'
+            : 'none';
+}
