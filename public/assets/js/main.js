@@ -277,20 +277,20 @@ const WargaController = {
     data: [],
     currentEditNik: null,
 
-    toggleFamily(index) {
+    toggleKeluarga(noKK) {
 
-    const el =
-        document.getElementById(`family-${index}`);
+    const rows =
+        document.querySelectorAll(`.anggota-${noKK}`);
 
-    if (el.style.display === 'none') {
+    rows.forEach(row => {
 
-        el.style.display = 'block';
+        row.style.display =
+            row.style.display === 'none'
+                ? 'table-row'
+                : 'none';
 
-    } else {
+    });
 
-        el.style.display = 'none';
-
-    }
 },
 
     async load() {
@@ -370,60 +370,188 @@ const WargaController = {
             return;
         }
         
-        tbody.innerHTML = displayData.map(warga => `
-            <tr>
-                <td><span class="rt-tag">${warga.rt}</span></td> <!-- Tetap menggunakan warga.rt karena ini adalah data RT, hanya label yang berubah -->
-                <td style="font-weight:600">${warga.nama}</td>
-                <td style="color:var(--text-muted)">${warga.no_kk || '-'}</td>
-                <td style="color:var(--text-muted)">${warga.nik}</td>
-                <td>${warga.tempat_lahir}, ${new Date(warga.tanggal_lahir).toLocaleDateString('id-ID')}</td>
-                <td>${warga.jenis_kelamin === 'Laki-laki' ? 'L' : 'P'}</td>
+// GROUP BERDASARKAN NO KK
+const grouped = {};
+
+displayData.forEach(warga => {
+
+    const kk = warga.no_kk || 'Tanpa KK';
+
+    if (!grouped[kk]) {
+        grouped[kk] = [];
+    }
+
+    grouped[kk].push(warga);
+
+});
+
+tbody.innerHTML = Object.keys(grouped).map(noKK => {
+
+    const keluarga = grouped[noKK];
+
+    // cari kepala keluarga
+    const kepalaKeluarga =
+        keluarga.find(w =>
+            w.status_hubungan === 'Kepala Keluarga'
+        ) || keluarga[0];
+
+    return `
+        <!-- ROW KEPALA KELUARGA -->
+        <tr class="kk-row"
+            onclick="toggleKeluarga('${noKK}')"
+            style="cursor:pointer; background:#f8fafc;">
+
+            <td>
+                <span class="rt-tag">
+                    ${kepalaKeluarga.rt}
+                </span>
+            </td>
+
+            <td style="font-weight:700;">
+                👨‍👩‍👧 ${kepalaKeluarga.nama}
+            </td>
+
+            <td>${noKK}</td>
+
+            <td colspan="16">
+                ${keluarga.length} Anggota Keluarga
+            </td>
+        </tr>
+
+        <!-- DETAIL ANGGOTA -->
+        ${keluarga.map(warga => `
+            <tr class="anggota-${noKK}"
+                style="display:none;">
+
+                <td>
+                    <span class="rt-tag">
+                        ${warga.rt}
+                    </span>
+                </td>
+
+                <td style="padding-left:2rem;">
+                    ${warga.nama}
+                </td>
+
+                <td style="color:var(--text-muted)">
+                    ${warga.no_kk || '-'}
+                </td>
+
+                <td style="color:var(--text-muted)">
+                    ${warga.nik}
+                </td>
+
+                <td>
+                    ${warga.tempat_lahir},
+                    ${new Date(warga.tanggal_lahir)
+                        .toLocaleDateString('id-ID')}
+                </td>
+
+                <td>
+                    ${warga.jenis_kelamin === 'Laki-laki'
+                        ? 'L'
+                        : 'P'}
+                </td>
+
                 <td>${warga.alamat}</td>
+
                 <td>${warga.rt_num || '-'}</td>
+
                 <td>${warga.rw_num || '-'}</td>
+
                 <td>${warga.kelurahan}</td>
+
                 <td>${warga.kecamatan}</td>
+
                 <td>${warga.agama}</td>
+
                 <td>${warga.status_perkawinan}</td>
+
                 <td>${warga.pekerjaan}</td>
+
                 <td>${warga.kewarganegaraan}</td>
-                <td><span class="badge ${warga.status_hunian === 'Tetap' ? 'badge-success' : 'badge-warning'}">${warga.status_hunian}</span></td>
-                <td><span class="badge ${warga.status_finansial === 'Mampu' 
-                    ? 'badge-success' : 'badge-warning'}">${warga.status_finansial || '-'}</span></td>
-                <td><span class="badge ${warga.kondisi === 'Difabel' ? 'badge-danger' : 'badge-info'}">${warga.kondisi}</span></td>
-                <td><span class="badge ${warga.status_yatim === 'Yatim' ? 'badge-danger' : 'badge-info'}">${warga.status_yatim || '-'}</span></td>
-                <td><span class="badge ${warga.status_kehamilan === 'Hamil' ? 'badge-danger' : 'badge-info'}">${warga.status_kehamilan || '-'}</span></td>
+
+                <td>
+                    <span class="badge ${
+                        warga.status_hunian === 'Tetap'
+                            ? 'badge-success'
+                            : 'badge-warning'
+                    }">
+                        ${warga.status_hunian}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge ${
+                        warga.status_finansial === 'Mampu'
+                            ? 'badge-success'
+                            : 'badge-warning'
+                    }">
+                        ${warga.status_finansial || '-'}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge ${
+                        warga.kondisi === 'Difabel'
+                            ? 'badge-danger'
+                            : 'badge-info'
+                    }">
+                        ${warga.kondisi}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge ${
+                        warga.status_yatim === 'Yatim'
+                            ? 'badge-danger'
+                            : 'badge-info'
+                    }">
+                        ${warga.status_yatim || '-'}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge ${
+                        warga.status_kehamilan === 'Hamil'
+                            ? 'badge-danger'
+                            : 'badge-info'
+                    }">
+                        ${warga.status_kehamilan || '-'}
+                    </span>
+                </td>
+
                 <td style="text-align:center; white-space: nowrap;">
-                    <button onclick="WargaController.edit('${warga.nik}')" class="btn-action" style="color:var(--primary);" title="Edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+
+                    <button
+                        onclick="WargaController.edit('${warga.nik}')"
+                        class="btn-action"
+                        style="color:var(--primary);"
+                        title="Edit">
+                        ✏️
                     </button>
-                    <button onclick="WargaController.hapus('${warga.nik}')" class="btn-action" style="color:var(--danger)" title="Hapus">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+
+                    <button
+                        onclick="WargaController.hapus('${warga.nik}')"
+                        class="btn-action"
+                        style="color:var(--danger)"
+                        title="Hapus">
+                        🗑️
                     </button>
+
                 </td>
             </tr>
-        `).join('');
+        `).join('')}
+    `;
 
-        // Setelah render tabel, panggil renderKeluarga untuk menampilkan data keluarga
-        this.renderKeluarga(this.data);
-    },
+    }).join('');
+},
 
 renderKeluarga(data) {
 
     const container =
         document.getElementById('keluarga-container');
 
-    const grouped = {};
-
-    data.forEach(warga => {
-
-        if (!grouped[warga.no_kk]) {
-            grouped[warga.no_kk] = [];
-        }
-
-        grouped[warga.no_kk].push(warga);
-
-    });
 
     container.innerHTML =
         Object.entries(grouped)
