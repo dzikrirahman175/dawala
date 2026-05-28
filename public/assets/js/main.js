@@ -361,17 +361,34 @@ const groupedData = Object.values(
         if (!acc[warga.no_kk]) {
             acc[warga.no_kk] = {
                 no_kk: warga.no_kk,
-                kepalaKeluarga: warga.hubungan_keluarga === 'Kepala Keluarga' ? warga : { nama: 'N/A', rt: warga.rt },
+                kepalaKeluarga: null,
                 anggota: []
             };
         }
 
+        // simpan anggota
         acc[warga.no_kk].anggota.push(warga);
+
+        // cek kepala keluarga
+        if (warga.hubungan_keluarga === 'Kepala Keluarga') {
+            acc[warga.no_kk].kepalaKeluarga = warga;
+        }
 
         return acc;
 
     }, {})
 );
+
+groupedData.forEach(keluarga => {
+
+    // jika tidak ada kepala keluarga
+    if (!keluarga.kepalaKeluarga) {
+
+        // pakai anggota pertama
+        keluarga.kepalaKeluarga = keluarga.anggota[0];
+    }
+
+});
 
 tbody.innerHTML = groupedData.map(keluarga => `
     <tr class="family-row" onclick="toggleFamily('${keluarga.no_kk}')">
