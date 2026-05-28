@@ -277,22 +277,6 @@ const WargaController = {
     data: [],
     currentEditNik: null,
 
-    toggleKeluarga(noKK) {
-
-    const rows =
-        document.querySelectorAll(`.anggota-${noKK}`);
-
-    rows.forEach(row => {
-
-        row.style.display =
-            row.style.display === 'none'
-                ? 'table-row'
-                : 'none';
-
-    });
-
-},
-
     async load() {
         try {
             const res = await fetch('/api/warga');
@@ -371,236 +355,137 @@ const WargaController = {
         }
         
 // GROUP BERDASARKAN NO KK
-const grouped = {};
+const groupedData = Object.values(
+    displayData.reduce((acc, warga) => {
 
-displayData.forEach(warga => {
+        if (!acc[warga.no_kk]) {
+            acc[warga.no_kk] = {
+                no_kk: warga.no_kk,
+                kepalaKeluarga: warga,
+                anggota: []
+            };
+        }
 
-    const kk = warga.no_kk || 'Tanpa KK';
+        acc[warga.no_kk].anggota.push(warga);
 
-    if (!grouped[kk]) {
-        grouped[kk] = [];
+        return acc;
+
+    }, {})
+);
+
+
+function toggleFamily(no_kk) {
+    const row = document.getElementById(`family-${no_kk}`);
+    if (row) {
+    row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
     }
+}
 
-    grouped[kk].push(warga);
+tbody.innerHTML = groupedData.map(keluarga => `
+    <tr class="family-row" onclick="toggleFamily('${keluarga.no_kk}')">
+        <td>
+            <span class="rt-tag">${keluarga.kepalaKeluarga.rt}</span>
+        </td>
 
-});
+        <td style="font-weight:600; cursor:pointer;">
+            👨‍👩‍👧 ${keluarga.kepalaKeluarga.nama}
+        </td>
 
-tbody.innerHTML = Object.keys(grouped).map(noKK => {
+        <td>${keluarga.no_kk}</td>
+        <td>${keluarga.kepalaKeluarga.tempat_lahir}, ${keluarga.kepalaKeluarga.tanggal_lahir}</td>
+        <td>${keluarga.kepalaKeluarga.agama}</td>
+        <td>${keluarga.kepalaKeluarga.alamat}</td>
+        <td>${keluarga.kepalaKeluarga.rt_num || '-'}</td>
+        <td>${keluarga.kepalaKeluarga.rw_num || '-'}</td>
+        <td>${keluarga.kepalaKeluarga.kelurahan}</td>
+        <td>${keluarga.kepalaKeluarga.kecamatan}</td>
+        <td>${keluarga.kepalaKeluarga.jenis_kelamin}</td>
+        <td>${keluarga.kepalaKeluarga.status_perkawinan}</td>
+        <td>${keluarga.kepalaKeluarga.pekerjaan}</td>
+        <td>${keluarga.kepalaKeluarga.kewarganegaraan}</td>
+        <td>${keluarga.kepalaKeluarga.status_hunian}</td>
+        <td>${keluarga.kepalaKeluarga.kondisi === 'Umum' ? '-' : (keluarga.kepalaKeluarga.kondisi || '-')}</td>
+        <td>${keluarga.kepalaKeluarga.status_yatim || '-'}</td>
+        <td>${keluarga.kepalaKeluarga.status_kehamilan || '-'}</td>
 
-    const keluarga = grouped[noKK];
+        <td colspan="2">
+            ${keluarga.anggota.length} Anggota Keluarga
+        </td>
 
-    // cari kepala keluarga
-    const kepalaKeluarga =
-        keluarga.find(w =>
-            w.status_hubungan === 'Kepala Keluarga'
-        ) || keluarga[0];
+        <td colspan="15"></td>
+    </tr>
 
-    return `
-        <!-- ROW KEPALA KELUARGA -->
-        <tr class="kk-row"
-            onclick="toggleKeluarga('${noKK}')"
-            style="cursor:pointer; background:#f8fafc;">
+    <tr id="family-${keluarga.no_kk}" style="display:none;">
+        <td colspan="20">
+            <table style="width:100%; background:var(--card-bg); border-radius:12px;">
+                ${keluarga.anggota.map(warga => `
+                    <tr>
+                        <td style="padding:10px;">
+                            ${warga.nama}
+                        </td>
 
-            <td>
-                <span class="rt-tag">
-                    ${kepalaKeluarga.rt}
-                </span>
-            </td>
+                        <td>${warga.nik}</td>
 
-            <td style="font-weight:700;">
-                👨‍👩‍👧 ${kepalaKeluarga.nama}
-            </td>
+                        <td>${warga.tempat_lahir}, ${warga.tanggal_lahir}</td>
 
-            <td>${noKK}</td>
+                        <td>${warga.agama}</td>
 
-            <td colspan="16">
-                ${keluarga.length} Anggota Keluarga
-            </td>
-        </tr>
+                        <td>${warga.alamat}</td>
 
-        <!-- DETAIL ANGGOTA -->
-        ${keluarga.map(warga => `
-            <tr class="anggota-${noKK}"
-                style="display:none;">
+                        <td>${warga.rt_num || '-'}</td>
 
-                <td>
-                    <span class="rt-tag">
-                        ${warga.rt}
-                    </span>
-                </td>
+                        <td>${warga.rw_num || '-'}</td>
 
-                <td style="padding-left:2rem;">
-                    ${warga.nama}
-                </td>
+                        <td>${warga.kelurahan}</td>
 
-                <td style="color:var(--text-muted)">
-                    ${warga.no_kk || '-'}
-                </td>
+                        <td>${warga.kecamatan}</td>
 
-                <td style="color:var(--text-muted)">
-                    ${warga.nik}
-                </td>
+                        <td>${warga.jenis_kelamin}</td>
 
-                <td>
-                    ${warga.tempat_lahir},
-                    ${new Date(warga.tanggal_lahir)
-                        .toLocaleDateString('id-ID')}
-                </td>
+                        <td>${warga.status_perkawinan}</td>
 
-                <td>
-                    ${warga.jenis_kelamin === 'Laki-laki'
-                        ? 'L'
-                        : 'P'}
-                </td>
+                        <td>${warga.pekerjaan}</td>
 
-                <td>${warga.alamat}</td>
+                        <td>${warga.kewarganegaraan}</td>
 
-                <td>${warga.rt_num || '-'}</td>
+                        <td>${warga.status_hunian}</td>
 
-                <td>${warga.rw_num || '-'}</td>
+                        <td>${warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-')}</td>
 
-                <td>${warga.kelurahan}</td>
+                        <td>${warga.status_yatim || '-'}</td>
 
-                <td>${warga.kecamatan}</td>
+                        <td>${warga.status_kehamilan || '-'}</td>
 
-                <td>${warga.agama}</td>
 
-                <td>${warga.status_perkawinan}</td>
+                        <td>
+                            <span class="badge ${
+                                warga.status_finansial === 'Mampu'
+                                ? 'badge-success'
+                                : 'badge-warning'
+                            }">
+                                ${warga.status_finansial || '-'}
+                            </span>
+                        </td>
 
-                <td>${warga.pekerjaan}</td>
+                        <td>
+                            <button onclick="event.stopPropagation(); WargaController.edit('${warga.nik}')"
+                                class="btn-action">
+                                Edit
+                            </button>
 
-                <td>${warga.kewarganegaraan}</td>
-
-                <td>
-                    <span class="badge ${
-                        warga.status_hunian === 'Tetap'
-                            ? 'badge-success'
-                            : 'badge-warning'
-                    }">
-                        ${warga.status_hunian}
-                    </span>
-                </td>
-
-                <td>
-                    <span class="badge ${
-                        warga.status_finansial === 'Mampu'
-                            ? 'badge-success'
-                            : 'badge-warning'
-                    }">
-                        ${warga.status_finansial || '-'}
-                    </span>
-                </td>
-
-                <td>
-                    <span class="badge ${
-                        warga.kondisi === 'Difabel'
-                            ? 'badge-danger'
-                            : 'badge-info'
-                    }">
-                        ${warga.kondisi}
-                    </span>
-                </td>
-
-                <td>
-                    <span class="badge ${
-                        warga.status_yatim === 'Yatim'
-                            ? 'badge-danger'
-                            : 'badge-info'
-                    }">
-                        ${warga.status_yatim || '-'}
-                    </span>
-                </td>
-
-                <td>
-                    <span class="badge ${
-                        warga.status_kehamilan === 'Hamil'
-                            ? 'badge-danger'
-                            : 'badge-info'
-                    }">
-                        ${warga.status_kehamilan || '-'}
-                    </span>
-                </td>
-
-                <td style="text-align:center; white-space: nowrap;">
-
-                    <button
-                        onclick="WargaController.edit('${warga.nik}')"
-                        class="btn-action"
-                        style="color:var(--primary);"
-                        title="Edit">
-                        ✏️
-                    </button>
-
-                    <button
-                        onclick="WargaController.hapus('${warga.nik}')"
-                        class="btn-action"
-                        style="color:var(--danger)"
-                        title="Hapus">
-                        🗑️
-                    </button>
-
-                </td>
-            </tr>
-        `).join('')}
-    `;
-
-    }).join('');
+                            <button onclick="event.stopPropagation(); WargaController.hapus('${warga.nik}')"
+                                class="btn-action">
+                                Hapus
+                            </button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </table>
+        </td>
+    </tr>
+`).join('');
 },
 
-renderKeluarga(data) {
-
-    const container =
-        document.getElementById('keluarga-container');
-
-
-    container.innerHTML =
-        Object.entries(grouped)
-        .map(([noKK, anggota], index) => {
-
-            const kepala =
-                anggota.find(a =>
-                    a.hubungan_keluarga === 'Kepala Keluarga'
-                ) || anggota[0];
-
-            return `
-                <div class="family-card">
-
-                    <div class="family-header"
-                        onclick="WargaController.toggleFamily(${index})">
-
-                        <h3>${kepala.nama}</h3>
-
-                        <p>KK: ${noKK}</p>
-
-                        <small>
-                            ${anggota.length} anggota
-                        </small>
-
-                    </div>
-
-                    <div class="family-body"
-                        id="family-${index}"
-                        style="display:none;">
-
-                        ${anggota.map(a => `
-                            <div class="member-item">
-
-                                <b>${a.nama}</b>
-
-                                <span>
-                                    ${a.hubungan_keluarga}
-                                </span>
-
-                            </div>
-                        `).join('')}
-
-                    </div>
-
-                </div>
-            `;
-
-        }).join('');
-},
 
     open() { document.getElementById('modal-warga').style.display = 'flex'; },
     close() { document.getElementById('modal-warga').style.display = 'none'; },
