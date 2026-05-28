@@ -361,7 +361,7 @@ const groupedData = Object.values(
         if (!acc[warga.no_kk]) {
             acc[warga.no_kk] = {
                 no_kk: warga.no_kk,
-                kepalaKeluarga: warga,
+                kepalaKeluarga: warga.hubungan_keluarga === 'Kepala Keluarga' ? warga : { nama: 'N/A', rt: warga.rt },
                 anggota: []
             };
         }
