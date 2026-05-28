@@ -394,13 +394,13 @@ tbody.innerHTML = groupedData.map(keluarga => `
         <td>${keluarga.no_kk}</td>
         <td>${keluarga.kepalaKeluarga.nik}</td>
         <td>${keluarga.kepalaKeluarga.tempat_lahir}, ${keluarga.kepalaKeluarga.tanggal_lahir}</td>
-        <td>${keluarga.kepalaKeluarga.agama}</td>
+        <td>${keluarga.kepalaKeluarga.jenis_kelamin}</td>
         <td>${keluarga.kepalaKeluarga.alamat}</td>
         <td>${keluarga.kepalaKeluarga.rt_num || '-'}</td>
         <td>${keluarga.kepalaKeluarga.rw_num || '-'}</td>
         <td>${keluarga.kepalaKeluarga.kelurahan}</td>
         <td>${keluarga.kepalaKeluarga.kecamatan}</td>
-        <td>${keluarga.kepalaKeluarga.jenis_kelamin}</td>
+        <td>${keluarga.kepalaKeluarga.agama}</td>
         <td>${keluarga.kepalaKeluarga.status_perkawinan}</td>
         <td>${keluarga.kepalaKeluarga.pekerjaan}</td>
         <td>${keluarga.kepalaKeluarga.kewarganegaraan}</td>
@@ -424,39 +424,23 @@ tbody.innerHTML = groupedData.map(keluarga => `
                         <td style="padding:10px;">
                             ${warga.nama}
                         </td>
-
+                        <td>${warga.no_kk}</td>
                         <td>${warga.nik}</td>
-
                         <td>${warga.tempat_lahir}, ${warga.tanggal_lahir}</td>
-
-                        <td>${warga.agama}</td>
-
-                        <td>${warga.alamat}</td>
-
-                        <td>${warga.rt_num || '-'}</td>
-
-                        <td>${warga.rw_num || '-'}</td>
-
-                        <td>${warga.kelurahan}</td>
-
-                        <td>${warga.kecamatan}</td>
-
                         <td>${warga.jenis_kelamin}</td>
-
+                        <td>${warga.alamat}</td>
+                        <td>${warga.rt_num || '-'}</td>
+                        <td>${warga.rw_num || '-'}</td>
+                        <td>${warga.kelurahan}</td>
+                        <td>${warga.kecamatan}</td>
+                        <td>${warga.agama}</td>
                         <td>${warga.status_perkawinan}</td>
-
                         <td>${warga.pekerjaan}</td>
-
                         <td>${warga.kewarganegaraan}</td>
-
                         <td>${warga.status_hunian}</td>
-
-                        <td>${warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-')}</td>
-
+                        <td>${warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-')}
                         <td>${warga.status_yatim || '-'}</td>
-
                         <td>${warga.status_kehamilan || '-'}</td>
-
 
                         <td>
                             <span class="badge ${
