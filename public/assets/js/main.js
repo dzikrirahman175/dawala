@@ -373,12 +373,15 @@ const groupedData = Object.values(
     }, {})
 );
 
+function toggleFamily(noKK) {
+    const row = document.getElementById(`family-${noKK}`);
 
-function toggleFamily(no_kk) {
-    const row = document.getElementById(`family-${no_kk}`);
-    if (row) {
-    row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
-    }
+    if (!row) return;
+
+    row.style.display =
+        row.style.display === 'none'
+            ? 'table-row'
+            : 'none';
 }
 
 tbody.innerHTML = groupedData.map(keluarga => `
