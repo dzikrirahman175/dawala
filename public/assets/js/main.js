@@ -413,6 +413,9 @@ tbody.innerHTML = groupedData.map(keluarga => `
             <table style="width:100%; background:var(--card-bg); border-radius:12px;">
                 ${keluarga.anggota.map(warga => `
                     <tr>
+                        <td>
+                            <span class="rt-tag">${warga.rt}</span>
+                        </td>
                         <td style="padding:10px;">
                             ${warga.nama}
                         </td>
