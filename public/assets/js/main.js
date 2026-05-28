@@ -392,6 +392,7 @@ tbody.innerHTML = groupedData.map(keluarga => `
         </td>
 
         <td>${keluarga.no_kk}</td>
+        <td>${keluarga.kepalaKeluarga.nik}</td>
         <td>${keluarga.kepalaKeluarga.tempat_lahir}, ${keluarga.kepalaKeluarga.tanggal_lahir}</td>
         <td>${keluarga.kepalaKeluarga.agama}</td>
         <td>${keluarga.kepalaKeluarga.alamat}</td>
