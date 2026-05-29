@@ -450,7 +450,7 @@ tbody.innerHTML = groupedData.map(keluarga => `
                         <td>${warga.pekerjaan}</td>
                         <td>${warga.kewarganegaraan}</td>
                         <td>${warga.status_hunian}</td>
-                        <td>${warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-')}
+                        <td>${warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-')}</td>
                         <td>${warga.status_yatim || '-'}</td>
                         <td>${warga.status_kehamilan || '-'}</td>
 
@@ -493,6 +493,7 @@ tbody.innerHTML = groupedData.map(keluarga => `
 
         this.currentEditNik = nik;
         document.getElementById('input-nama').value = warga.nama;
+        document.getElementById('input-hubungan').value = warga.hubungan_keluarga || '';
         document.getElementById('input-no-kk').value = warga.no_kk || '';
         document.getElementById('input-nik').value = warga.nik;
         document.getElementById('input-tempat-lahir').value = warga.tempat_lahir;
@@ -526,6 +527,7 @@ tbody.innerHTML = groupedData.map(keluarga => `
 
     const newWarga = {
         operator: user ? user.username : 'System',
+        hubungan_keluarga: document.getElementById('input-hubungan').value,
         nama: document.getElementById('input-nama').value,
         no_kk: document.getElementById('input-no-kk').value,
         nik: document.getElementById('input-nik').value,
