@@ -414,6 +414,15 @@ tbody.innerHTML = groupedData.map(keluarga => `
         <td>${keluarga.kepalaKeluarga.pekerjaan}</td>
         <td>${keluarga.kepalaKeluarga.kewarganegaraan}</td>
         <td>${keluarga.kepalaKeluarga.status_hunian}</td>
+        <td>
+            <span class="badge ${
+                keluarga.kepalaKeluarga.status_finansial === 'Mampu'
+                ? 'badge-success'
+                : 'badge-warning'
+            }">
+                ${keluarga.kepalaKeluarga.status_finansial || '-'}
+            </span>
+        </td>
         <td>${keluarga.kepalaKeluarga.kondisi === 'Umum' ? '-' : (keluarga.kepalaKeluarga.kondisi || '-')}</td>
         <td>${keluarga.kepalaKeluarga.status_yatim || '-'}</td>
         <td>${keluarga.kepalaKeluarga.status_kehamilan || '-'}</td>
