@@ -450,10 +450,6 @@ tbody.innerHTML = groupedData.map(keluarga => `
                         <td>${warga.pekerjaan}</td>
                         <td>${warga.kewarganegaraan}</td>
                         <td>${warga.status_hunian}</td>
-                        <td>${warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-')}</td>
-                        <td>${warga.status_yatim || '-'}</td>
-                        <td>${warga.status_kehamilan || '-'}</td>
-
                         <td>
                             <span class="badge ${
                                 warga.status_finansial === 'Mampu'
@@ -463,7 +459,9 @@ tbody.innerHTML = groupedData.map(keluarga => `
                                 ${warga.status_finansial || '-'}
                             </span>
                         </td>
-
+                        <td>${warga.kondisi === 'Umum' ? '-' : (warga.kondisi || '-')}</td>
+                        <td>${warga.status_yatim || '-'}</td>
+                        <td>${warga.status_kehamilan || '-'}</td>
                         <td>
                             <button onclick="event.stopPropagation(); WargaController.edit('${warga.nik}')"
                                 class="btn-action">
