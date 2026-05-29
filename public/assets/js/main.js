@@ -467,12 +467,12 @@ tbody.innerHTML = groupedData.map(keluarga => `
                         <td>
                             <button onclick="event.stopPropagation(); WargaController.edit('${warga.nik}')"
                                 class="btn-action">
-                                Edit
+                                ✏️
                             </button>
 
                             <button onclick="event.stopPropagation(); WargaController.hapus('${warga.nik}')"
                                 class="btn-action">
-                                Hapus
+                                🗑️
                             </button>
                         </td>
                     </tr>
